@@ -68,6 +68,12 @@
   padding: 2px;
   margin-bottom: 4px;
 }
+.success {
+  color: green;
+  font-size: smaller;
+  padding: 2px;
+  margin-bottom: 4px;
+}
 
 .code {
   background: #fafafa;

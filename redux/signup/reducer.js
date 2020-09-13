@@ -1,4 +1,4 @@
-import {apiCallReducerBuilder} from "../master/reducer";
+import {API_CALL_STATUS, apiCallReducerBuilder} from "../master/reducer";
 import ActionType from "./actionType";
 import {combineReducers} from "redux";
 import counterReducer from "../reducers/reducer";
@@ -12,4 +12,9 @@ export default combineReducers({
 });
 
 export const selectLogin = (state) => state.signupReducer.loginResp;
+export const isLoginSuccess = (state) => state.signupReducer.loginResp.status === API_CALL_STATUS.SUCCESS
+export const isLoginFailed = (state) => state.signupReducer.loginResp.status === API_CALL_STATUS.FAILED
+
 export const selectRegister = (state) => state.signupReducer.registerResp;
+export const isRegisterSuccess = (state) => state.signupReducer.registerResp.status === API_CALL_STATUS.SUCCESS
+export const isRegisterFailed = (state) => state.signupReducer.registerResp.status === API_CALL_STATUS.FAILED

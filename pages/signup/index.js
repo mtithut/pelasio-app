@@ -5,17 +5,21 @@ import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
 import {bindActionCreators} from "redux";
 import {login} from "../../redux/signup/actions";
-import {selectLogin, selectSignUp} from "../../redux/signup/reducer";
+import {
+  isLoginFailed,
+  isLoginSuccess,
+  selectLogin,
+} from "../../redux/signup/reducer";
 
 
 function Login(props) {
-  const {LoginStatus, login} = props
+  const {LoginData, loginSuccess, loginFailed, login} = props
 
   const [user, setUser] = useState(undefined)
   const [pass, setPass] = useState(undefined)
   const [validation, setValidation] = useState({user: true, pass: true})
 
-  console.log('LoginStatus', LoginStatus)
+  console.log('LoginStatus', LoginData)
   const onChangeUser = (event) => {
     const value = event.target.value
     setUser(value)
@@ -38,6 +42,12 @@ function Login(props) {
 
   return <div className={styles.container}>
     <h1>ورود به حساب کاربری</h1>
+    <div className={styles.success} hidden={!loginSuccess}>
+      <span>ورود با موفقیت انجام شد</span>
+    </div>
+    <div className={styles.error} hidden={!loginFailed}>
+      <span>خطا در ورود</span>
+    </div>
     <div>
       <input type={'text'} value={user} onChange={onChangeUser} placeholder={'ایمیل'}/>
     </div>
@@ -64,8 +74,11 @@ function Login(props) {
 const mapStateToProps = (state) => {
   console.log(state)
   return Object.assign({},
+
     {
-      LoginStatus: selectLogin(state),
+      loginSuccess: isLoginSuccess(state),
+      loginSailed: isLoginFailed(state),
+      LoginData: selectLogin(state),
     }
   );
 };

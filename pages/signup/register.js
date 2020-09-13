@@ -9,22 +9,31 @@ import {
   isValidPassword,
   isValidPasswordRep
 } from "../../components/utility/validation";
-import {selectRegister, selectSignUp} from "../../redux/signup/reducer";
+import {
+  isRegisterFailed,
+  isRegisterSuccess,
+  selectRegister,
+
+} from "../../redux/signup/reducer";
 import {bindActionCreators} from "redux";
 import {register} from "../../redux/signup/actions";
 
 
 function Register(props) {
-  const {registerStatus, register} = props
+  const {registerData, registerFailed, registerSuccess, register} = props
   const [firstname, setFirstname] = useState(undefined)
   const [lastname, setLastname] = useState(undefined)
   const [country, setCountry] = useState(1)
   const [email, setEmail] = useState(undefined)
   const [pass, setPass] = useState(undefined)
   const [passRep, setPassRep] = useState(undefined)
-  const [validation, setValidation] = useState({firstname: true, lastname: true, email: true, pass: true, passRep: true})
-
-  console.log('registerStatus', registerStatus)
+  const [validation, setValidation] = useState({
+    firstname: true,
+    lastname: true,
+    email: true,
+    pass: true,
+    passRep: true
+  })
 
 
   const onChangeName = (event) => {
@@ -48,7 +57,7 @@ function Register(props) {
   }
   const onClickRegister = () => {
     if (isValidFirstname(firstname) && isValidLastname(lastname) && isValidEmail(email) && country && isValidPassword(pass) && isValidPasswordRep(pass, passRep)) {
-      register && register(firstname,lastname,email,country,pass,passRep)
+      register && register(firstname, lastname, email, country, pass, passRep)
     }
     setValidation({
       firstname: isValidFirstname(firstname),
@@ -65,6 +74,12 @@ function Register(props) {
 
   return <div className={styles.container}>
     <h1>حساب کاربری خود را ایجاد کنید</h1>
+    <div className={styles.success} hidden={!registerSuccess}>
+      <span>ثبت اطلاعات با موفقیت انجام شد</span>
+    </div>
+    <div className={styles.error} hidden={!registerFailed}>
+      <span>خطا در ورود</span>
+    </div>
     <div>
       <input type={'text'} value={firstname} onChange={onChangeName} placeholder={'نام'}/>
     </div>
@@ -117,7 +132,9 @@ const mapStateToProps = (state) => {
   console.log(state)
   return Object.assign({},
     {
-      registerStatus: selectRegister(state),
+      registerSuccess: isRegisterSuccess(state),
+      registerFailed: isRegisterFailed(state),
+      registerData: selectRegister(state),
     }
   );
 };
