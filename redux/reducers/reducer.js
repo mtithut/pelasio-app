@@ -1,4 +1,4 @@
-import {DECREMENT_COUNTER, INCREMENT_COUNTER} from '../ActionType';
+import {DECREMENT_COUNTER, INCREMENT_COUNTER} from '../actionType';
 
 export const initialState = {
     value: 20

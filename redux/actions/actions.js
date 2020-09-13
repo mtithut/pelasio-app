@@ -1,4 +1,4 @@
-import { INCREMENT_COUNTER , DECREMENT_COUNTER } from '../ActionType'
+import { INCREMENT_COUNTER , DECREMENT_COUNTER } from '../actionType'
 
 
 export const incrementCounter = () => ({
