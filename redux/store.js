@@ -3,17 +3,21 @@ import {useMemo} from 'react'
 import {createStore, applyMiddleware} from 'redux'
 import logger from "redux-logger";
 import {composeWithDevTools} from 'redux-devtools-extension'
-import rootReducer from './reducers/rootReducer';
-import {initialState} from "./reducers/reducer";
+import thunk from 'redux-thunk';
+// import rootReducer from './reducers/rootReducer';
+import rootReducer from './master/rootReducer';
+// import {initialState} from "./reducers/reducer";
+import {initialState} from "./master/reducer";
 
 let store
 const middlewares = [];
 
 if (process.env.NODE_ENV === "development") {
   middlewares.push(logger);
+  middlewares.push(thunk);
 }
 
-function initStore(preloadedState = initialState) {
+function initStore(preloadedState = {}/*initialState*/) {
   return createStore(
       rootReducer,
       preloadedState,

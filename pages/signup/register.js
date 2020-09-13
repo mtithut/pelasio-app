@@ -4,29 +4,34 @@ import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {
   isValidEmail,
-  isValidFamily,
-  isValidName,
+  isValidLastname,
+  isValidFirstname,
   isValidPassword,
   isValidPasswordRep
 } from "../../components/utility/validation";
+import {selectRegister, selectSignUp} from "../../redux/signup/reducer";
+import {bindActionCreators} from "redux";
+import {register} from "../../redux/signup/actions";
 
 
 function Register(props) {
-  const {register} = props
-  const [name, setName] = useState(undefined)
-  const [family, setFamily] = useState(undefined)
+  const {registerStatus, register} = props
+  const [firstname, setFirstname] = useState(undefined)
+  const [lastname, setLastname] = useState(undefined)
   const [country, setCountry] = useState(1)
   const [email, setEmail] = useState(undefined)
   const [pass, setPass] = useState(undefined)
   const [passRep, setPassRep] = useState(undefined)
-  const [validation, setValidation] = useState({name: true, family: true, email: true, pass: true, passRep: true})
+  const [validation, setValidation] = useState({firstname: true, lastname: true, email: true, pass: true, passRep: true})
+
+  console.log('registerStatus', registerStatus)
 
 
   const onChangeName = (event) => {
-    setName(event.target.value)
+    setFirstname(event.target.value)
   }
-  const onChangeFamily = (event) => {
-    setFamily(event.target.value)
+  const onChangeLastname = (event) => {
+    setLastname(event.target.value)
   }
   const onChangeCountry = (event) => {
     setCountry(event.target.value)
@@ -42,13 +47,13 @@ function Register(props) {
     setPassRep(event.target.value)
   }
   const onClickRegister = () => {
-    if (isValidName(name) && isValidFamily(family) && isValidEmail(email) && country && isValidPassword(pass) && isValidPasswordRep(pass, passRep)) {
-      // call register
+    if (isValidFirstname(firstname) && isValidLastname(lastname) && isValidEmail(email) && country && isValidPassword(pass) && isValidPasswordRep(pass, passRep)) {
+      register && register(firstname,lastname,email,country,pass,passRep)
     }
     setValidation({
-      name: isValidName(name),
-      family: isValidFamily(family),
-      email: isValidFamily(email),
+      firstname: isValidFirstname(firstname),
+      lastname: isValidLastname(lastname),
+      email: isValidEmail(email),
       pass: isValidPassword(pass),
       passRep: isValidPasswordRep(pass, passRep)
     })
@@ -61,16 +66,16 @@ function Register(props) {
   return <div className={styles.container}>
     <h1>حساب کاربری خود را ایجاد کنید</h1>
     <div>
-      <input type={'text'} value={name} onChange={onChangeName} placeholder={'نام'}/>
+      <input type={'text'} value={firstname} onChange={onChangeName} placeholder={'نام'}/>
     </div>
-    <div className={styles.error} hidden={validation.name}>
+    <div className={styles.error} hidden={validation.firstname}>
       <span>نام را وارد کنید</span>
     </div>
     <div>
-      <input type={'text'} value={family} onChange={onChangeFamily} placeholder={'نام خانواگی'}/>
+      <input type={'text'} value={lastname} onChange={onChangeLastname} placeholder={'نام خانواگی'}/>
 
     </div>
-    <div className={styles.error} hidden={validation.family}>
+    <div className={styles.error} hidden={validation.lastname}>
       <span>نام خانوادگی را وارد کنید</span>
     </div>
 
@@ -108,8 +113,17 @@ function Register(props) {
   </div>
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = (state) => {
+  console.log(state)
+  return Object.assign({},
+    {
+      registerStatus: selectRegister(state),
+    }
+  );
+};
 
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  register,
+}, dispatch);
 
-const mapDispatchToProps = {};
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

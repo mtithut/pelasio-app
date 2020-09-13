@@ -3,13 +3,19 @@ import Router from 'next/router';
 import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
+import {bindActionCreators} from "redux";
+import {login} from "../../redux/signup/actions";
+import {selectLogin, selectSignUp} from "../../redux/signup/reducer";
 
 
 function Login(props) {
-  const {login} = props
+  const {LoginStatus, login} = props
+
   const [user, setUser] = useState(undefined)
   const [pass, setPass] = useState(undefined)
   const [validation, setValidation] = useState({user: true, pass: true})
+
+  console.log('LoginStatus', LoginStatus)
   const onChangeUser = (event) => {
     const value = event.target.value
     setUser(value)
@@ -23,12 +29,13 @@ function Login(props) {
   }
   const onClickLogin = () => {
     if (user && isValidEmail(user) && pass && isValidPassword(pass)) {
+      login(user, pass)
       //call login
-
     }
     setValidation({user: isValidEmail(user), pass: isValidPassword(pass)})
 
   }
+
   return <div className={styles.container}>
     <h1>ورود به حساب کاربری</h1>
     <div>
@@ -46,16 +53,25 @@ function Login(props) {
     <div>
       <button type={'button'} onClick={onClickRegister}>ثبت نام</button>
       <button
-          // disabled={!isValidEmail(user) || !isValidPassword(pass)}
-          type={'button'}
-          onClick={onClickLogin}>ورود
+        // disabled={!isValidEmail(user) || !isValidPassword(pass)}
+        type={'button'}
+        onClick={onClickLogin}>ورود
       </button>
     </div>
   </div>
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = (state) => {
+  console.log(state)
+  return Object.assign({},
+    {
+      LoginStatus: selectLogin(state),
+    }
+  );
+};
 
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  login,
+}, dispatch);
 
-const mapDispatchToProps = {};
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

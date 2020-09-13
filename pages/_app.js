@@ -6,9 +6,9 @@ const App = ({Component, pageProps}) => {
   const store = useStore(pageProps.initialReduxState)
   console.log('store', store)
   return (
-      <Provider store={store}>
-        <Component {...pageProps} />
-      </Provider>
+    <Provider store={store}>
+      <Component {...pageProps} />
+    </Provider>
   )
 }
 

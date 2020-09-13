@@ -1,7 +1,7 @@
-export const isValidName = (value) => {
+export const isValidFirstname = value => {
   return value && value.length
 }
-export const isValidFamily = (value) => {
+export const isValidLastname = value => {
   return value && value.length
 }
 export const isValidPassword = (value) => {
