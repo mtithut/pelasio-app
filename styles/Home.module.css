@@ -74,6 +74,11 @@
   padding: 2px;
   margin-bottom: 4px;
 }
+.welcome {
+  color: green;
+  padding: 2px;
+  margin-bottom: 4px;
+}
 
 .code {
   background: #fafafa;

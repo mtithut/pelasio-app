@@ -1,4 +1,4 @@
-import counterReducer from './reducer';
+import counterReducer from './baseReducer';
 import {combineReducers} from 'redux';
 import signupReducer from '../signup/reducer'
 

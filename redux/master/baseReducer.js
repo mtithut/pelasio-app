@@ -13,7 +13,7 @@ export const initialState = {
   status: API_CALL_STATUS.INIT
 };
 
-export const apiCallReducerBuilder = (successType, failedType, pendingType) => (state = initialState, action = {}) => {
+export const reducerBuilder = (successType, failedType, pendingType) => (state = initialState, action = {}) => {
   switch (action.type) {
     case pendingType:
       return Object.assign({}, state, {status: API_CALL_STATUS.PENDING, isPending: true});
@@ -27,7 +27,7 @@ export const apiCallReducerBuilder = (successType, failedType, pendingType) => (
     case failedType:
       return Object.assign({}, state, {
         status: API_CALL_STATUS.FAILED,
-        errors: (action.payload && action.payload.errors) ? action.payload.errors : action.payload,
+        errors: action.payload,/*(action.payload && action.payload.error) ? action.payload.error : */
         data: null,
         isPending: false
       });

@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 // import rootReducer from './reducers/rootReducer';
 import rootReducer from './master/rootReducer';
 // import {initialState} from "./reducers/reducer";
-import {initialState} from "./master/reducer";
+import {initialState} from "./master/baseReducer";
 
 let store
 const middlewares = [];
