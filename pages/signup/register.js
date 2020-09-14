@@ -38,12 +38,12 @@ function Register(props) {
     passRep: true
   })
 
-  useEffect(() => {
-    if (registerSuccess)
-      onClickGoLogin()
-  }, [
-    registerSuccess
-  ])
+  // useEffect(() => {
+  //   // if (registerSuccess)
+  //     // onClickGoLogin()
+  // }, [
+  //   registerSuccess
+  // ])
 
   useEffect(() => {
     if (Array.isArray(data) && data.length)
