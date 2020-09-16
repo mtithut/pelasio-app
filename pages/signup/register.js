@@ -143,7 +143,8 @@ function Register(props) {
       <div>
         <select value={country} onChange={onChangeCountry} placeholder={'کشور'}>
           {
-            data && data.map(country => <option value={country.country_id}>{country.name}</option>)
+            data && data.map(country => <option key={`cty ${country.country_id}`}
+                                                value={country.country_id}>{country.name}</option>)
           }
         </select>
       </div>
