@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Router from 'next/router';
+import {useRouter} from 'next/router';
 import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {
@@ -24,6 +24,7 @@ import Api, {baseUrl, urls} from '../../api'
 function Register(props) {
   const {registerData, registerFailed, registerSuccess, register, countries} = props
   const {data} = countries
+  const router = useRouter()
   const [firstname, setFirstname] = useState(undefined)
   const [lastname, setLastname] = useState(undefined)
   const [country, setCountry] = useState(undefined)
@@ -85,7 +86,7 @@ function Register(props) {
     })
   }
   const onClickGoLogin = () => {
-    Router.push('/signup')
+    router.push('/signup')
   }
 
   const getErrorMessage = () => {

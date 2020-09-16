@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Router from 'next/router';
+import Router ,{useRouter} from 'next/router';
 import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
@@ -16,13 +16,14 @@ import Head from "next/head";
 function Login(props) {
   const {LoginData, loginSuccess, loginFailed, login} = props
   console.log('status', LoginData)
+  const router = useRouter()
   const [user, setUser] = useState(undefined)
   const [pass, setPass] = useState(undefined)
   const [validation, setValidation] = useState({user: true, pass: true})
 
   useEffect(() => {
     if (loginSuccess) {
-      Router.push('/')
+      router.push('/')
     }
   }, [loginSuccess])
 
@@ -35,7 +36,7 @@ function Login(props) {
     setPass(value)
   }
   const onClickRegister = () => {
-    Router.push('/signup/register')
+    router.push('/signup/register')
   }
   const onClickLogin = () => {
     if (user && isValidEmail(user) && pass && isValidPassword(pass)) {
