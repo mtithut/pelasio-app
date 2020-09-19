@@ -1,6 +1,9 @@
 import ActionType from './actionType'
 import Api from '../../api'
 
+export const resetLogin = () => (dispatch) => {
+  dispatch({type: ActionType.LOGIN_INITIAL})
+}
 export const login = (username, password) => (dispatch) => {
   dispatch({type: ActionType.LOGIN_PENDING})
   Api.login(username, password)
@@ -12,6 +15,9 @@ export const login = (username, password) => (dispatch) => {
     )
 };
 
+export const resetRegister = () => (dispatch) => {
+  dispatch({type: ActionType.REGISTER_INITIAL})
+}
 export const register = (firstname, lastname, email, country, password, passwordRep) => (dispatch) => {
   dispatch({type: ActionType.REGISTER_PENDING})
   Api.register(firstname, lastname, email, country, password, passwordRep)

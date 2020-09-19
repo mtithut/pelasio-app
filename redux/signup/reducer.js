@@ -2,8 +2,8 @@ import {API_CALL_STATUS, reducerBuilder} from "../master/baseReducer";
 import ActionType from "./actionType";
 import {combineReducers} from "redux";
 
-const loginResp = reducerBuilder(ActionType.LOGIN_SUCCESS, ActionType.LOGIN_FAILED, ActionType.LOGIN_PENDING)
-const registerResp = reducerBuilder(ActionType.REGISTER_SUCCESS, ActionType.REGISTER_FAILED, ActionType.REGISTER_PENDING)
+const loginResp = reducerBuilder(ActionType.LOGIN_SUCCESS, ActionType.LOGIN_FAILED, ActionType.LOGIN_PENDING, ActionType.LOGIN_INITIAL)
+const registerResp = reducerBuilder(ActionType.REGISTER_SUCCESS, ActionType.REGISTER_FAILED, ActionType.REGISTER_PENDING, ActionType.REGISTER_INITIAL)
 
 export default combineReducers({
   loginResp,

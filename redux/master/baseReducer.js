@@ -5,7 +5,7 @@ export const API_CALL_STATUS = {
   FAILED: 'FAILED'
 };
 
-
+export const INIT_STATE = 'INIT_STATE'
 export const initialState = {
   data: undefined,
   isPending: false,
@@ -13,8 +13,10 @@ export const initialState = {
   status: API_CALL_STATUS.INIT
 };
 
-export const reducerBuilder = (successType, failedType, pendingType) => (state = initialState, action = {}) => {
+export const reducerBuilder = (successType, failedType, pendingType, initState) => (state = initialState, action = {}) => {
   switch (action.type) {
+    case initState:
+      return Object.assign({}, initialState);
     case pendingType:
       return Object.assign({}, state, {status: API_CALL_STATUS.PENDING, isPending: true});
     case successType:

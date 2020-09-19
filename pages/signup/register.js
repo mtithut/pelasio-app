@@ -17,73 +17,49 @@ import {
 } from "../../redux/signup/reducer";
 import Head from "next/head";
 import {bindActionCreators} from "redux";
-import {register} from "../../redux/signup/actions";
-import Api, {baseUrl, urls} from '../../api'
+import {register, resetRegister} from "../../redux/signup/actions";
+import Api from '../../api'
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import * as Yup from "yup";
 
+const DisplayingErrorMessagesSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Invalid email')
+    .required('Required'),
+  firstname: Yup.string()
+    .required('Required'),
+  lastname: Yup.string()
+    .required('Required'),
+  country: Yup.string()
+    .required('Required'),
+  password: Yup.string()
+    .min(6, 'The password must be at least 6 characters.')
+    .required('Required'),
+  passwordConfirmation: Yup.string()
+    .min(6, 'The password must be at least 6 characters.')
+    .required('Required')
+    .oneOf([Yup.ref('password'), null], 'Passwords must match')
+});
 
 function Register(props) {
-  const {registerData, registerFailed, registerSuccess, register, countries} = props
+  const {registerData, registerFailed, registerSuccess, register, resetRegister, countries} = props
   const {data} = countries
   const router = useRouter()
-  const [firstname, setFirstname] = useState(undefined)
-  const [lastname, setLastname] = useState(undefined)
-  const [country, setCountry] = useState(undefined)
-  const [email, setEmail] = useState(undefined)
-  const [pass, setPass] = useState(undefined)
-  const [passRep, setPassRep] = useState(undefined)
-  const [validation, setValidation] = useState({
-    firstname: true,
-    lastname: true,
-    email: true,
-    pass: true,
-    passRep: true
-  })
+  const [countryList, setCountries] = useState(undefined)
 
-  // useEffect(() => {
-  //   // if (registerSuccess)
-  //     // onClickGoLogin()
-  // }, [
-  //   registerSuccess
-  // ])
+  useEffect(() => {
+    if (registerFailed)
+      resetRegister()
+  }, [])
 
   useEffect(() => {
     if (Array.isArray(data) && data.length)
-      setCountry(data[0].country_id)
-  }, [
-    data
-  ])
+      setCountries(data)
+  }, [data])
 
+  const onClickRegister = (values) => {
+    register && register(values.firstname, values.lastname, values.email, values.country, values.password, values.passwordConfirmation)
 
-  const onChangeName = (event) => {
-    setFirstname(event.target.value)
-  }
-  const onChangeLastname = (event) => {
-    setLastname(event.target.value)
-  }
-  const onChangeCountry = (event) => {
-    setCountry(event.target.value)
-  }
-  const onChangeEmail = (event) => {
-    const value = event.target.value
-    setEmail(value)
-  }
-  const onChangePass = (event) => {
-    setPass(event.target.value)
-  }
-  const onChangePassRep = (event) => {
-    setPassRep(event.target.value)
-  }
-  const onClickRegister = () => {
-    if (isValidFirstname(firstname) && isValidLastname(lastname) && isValidEmail(email) && country && isValidPassword(pass) && isValidPasswordRep(pass, passRep)) {
-      register && register(firstname, lastname, email, country, pass, passRep)
-    }
-    setValidation({
-      firstname: isValidFirstname(firstname),
-      lastname: isValidLastname(lastname),
-      email: isValidEmail(email),
-      pass: isValidPassword(pass),
-      passRep: isValidPasswordRep(pass, passRep)
-    })
   }
   const onClickGoLogin = () => {
     router.push('/signup')
@@ -120,52 +96,66 @@ function Register(props) {
           getErrorMessage()
         }
       </div>
-      <div>
-        <input type={'text'} value={firstname} onChange={onChangeName} placeholder={'نام'}/>
-      </div>
-      <div className={styles.error} hidden={validation.firstname}>
-        <span>نام را وارد کنید</span>
-      </div>
-      <div>
-        <input type={'text'} value={lastname} onChange={onChangeLastname} placeholder={'نام خانواگی'}/>
+      <Formik
+        initialValues={{
+          firstname: '',
+          lastname: '',
+          country: (data && Array.isArray(data) && data.length) ? data[0].country_id : '',
+          email: '',
+          password: '',
+          passwordConfirmation: ''
+        }}
+        validationSchema={DisplayingErrorMessagesSchema}
+        onSubmit={(values, {setSubmitting}) => {
+          setTimeout(() => {
+            setSubmitting(false);
+            onClickRegister(values)
+          }, 400);
+        }}
+      >
+        {({isSubmitting}) => (
+          <Form>
+            <div>
+              <Field type="text" name="firstname" placeholder={'نام'}/>
+              <ErrorMessage name="firstname" component="div" className={styles.error}/>
+            </div>
+            <div>
+              <Field type="text" name="lastname" placeholder={'نام خانوادگی'}/>
+              <ErrorMessage name="lastname" component="div" className={styles.error}/>
+            </div>
+            <div>
+              <Field as="select" name="country" placeholder={'کشور'}>
+                {
+                  countryList && countryList.map(country => <option key={`cty ${country.country_id}`}
+                                                                    value={country.country_id}>{country.name}</option>)
+                }
+              </Field>
+              <ErrorMessage name="country" component="div" className={styles.error}/>
+            </div>
+            <div>
+              <Field type="email" name="email" placeholder={'ایمیل'}/>
+              <ErrorMessage name="email" component="div" className={styles.error}/>
+            </div>
+            <div>
+              <Field type="password" name="password" placeholder={'رمز عبور'}/>
+              <ErrorMessage name="password" component="div" className={styles.error}/>
+            </div>
 
-      </div>
-      <div className={styles.error} hidden={validation.lastname}>
-        <span>نام خانوادگی را وارد کنید</span>
-      </div>
+            <div>
+              <Field type="password" name="passwordConfirmation" placeholder={'تکرار رمز عبور'}/>
+              <ErrorMessage name="passwordConfirmation" component="div" className={styles.error}/>
+            </div>
 
-      <div>
-        <input type={'text'} value={email} onChange={onChangeEmail} placeholder={'ایمیل'}/>
+            <div>
+              <button type={'submit'} disabled={isSubmitting}>ثبت نام</button>
+              <button type={'button'} onClick={onClickGoLogin}>ورود</button>
+            </div>
 
-      </div>
-      <div className={styles.error} hidden={validation.email}>
-        <span>ایمیل معتبر وارد کنید</span>
-      </div>
-      <div>
-        <select value={country} onChange={onChangeCountry} placeholder={'کشور'}>
-          {
-            data && data.map(country => <option key={`cty ${country.country_id}`}
-                                                value={country.country_id}>{country.name}</option>)
-          }
-        </select>
-      </div>
-      <div>
-        <input type={'password'} value={pass} onChange={onChangePass} placeholder={'پسورد'}/>
-      </div>
-      <div className={styles.error} hidden={validation.pass}>
-        <span>رمز عبور معتبر وارد کنید</span>
-      </div>
-      <div>
-        <input type={'password'} value={passRep} onChange={onChangePassRep} placeholder={'تکرار پسورد'}/>
 
-      </div>
-      <div className={styles.error} hidden={validation.passRep}>
-        <span>تکرار رمز عبور معتبر وارد کنید</span>
-      </div>
-      <div>
-        <button type={'button'} onClick={onClickGoLogin}>ورود</button>
-        <button type={'button'} onClick={onClickRegister}>ثبت نام</button>
-      </div>
+          </Form>
+        )
+        }
+      </Formik>
     </div>
   </>
 }
@@ -195,6 +185,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   register,
+  resetRegister
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);
