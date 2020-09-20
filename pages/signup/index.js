@@ -13,6 +13,7 @@ import {
 import Head from "next/head";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from 'yup';
+import CustomHead from "../../components/head";
 
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -66,7 +67,7 @@ function Login(props) {
   }
 
   return <>
-    <Head><title>ورود</title></Head>
+    <CustomHead title={'پلازیو ، پلتفرم خرید و فروش اینترنتی کالا در ایران و خاورمیانه'}/>
     <div className={styles.container}>
       <h1>ورود به حساب کاربری</h1>
       <div className={styles.success} hidden={!loginSuccess}>

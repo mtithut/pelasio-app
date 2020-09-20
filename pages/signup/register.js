@@ -21,6 +21,7 @@ import {register, resetRegister} from "../../redux/signup/actions";
 import Api from '../../api'
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
+import CustomHead from "../../components/head";
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string()
@@ -83,9 +84,7 @@ function Register(props) {
   }
 
   return <>
-    <Head>
-      <title>ثبت نام</title>
-    </Head>
+    <CustomHead title={'پلازیو ، پلتفرم خرید و فروش اینترنتی کالا در ایران و خاورمیانه'}/>
     <div className={styles.container}>
       <h1>حساب کاربری خود را ایجاد کنید</h1>
       <div className={styles.success} hidden={!registerSuccess}>

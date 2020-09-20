@@ -6,7 +6,11 @@ export const baseUrl = 'http://api.pelazio.test';
 export const urls = {
   login: '/v1/customers/users/auth/login',
   register: '/v1/customers/users/auth/register',
-  countries: '/v1/baseinfo/countries'
+  countries: '/v1/baseinfo/countries',
+  categories: '/v1/baseinfo/categories',
+  productSearch: '/v1/customers/products/search/',
+  productFilter: '/v1/customers/products/filter/',
+  catalogs: '/v1/customers/catalogs/',
 }
 
 const post = function (url, headers = {}, body = '') {
@@ -59,5 +63,18 @@ export default {
     }
 
     return post(urls.register, {}, data)
+  },
+  getCategory: () => get(urls.categories),
+  getProductSearch: function (category, limit, sort, inStock, lang) {
+    let params = `?category=${category}&limit=${limit}&sort=${sort}&in-stock=${inStock}&lang=${lang}`
+    return get(urls.productSearch + params)
+  },
+  getProductFilter: function (category, limit, sort, inStock, lang) {
+    let params = `?category=${category}&limit=${limit}&sort=${sort}&in-stock=${inStock}&lang=${lang}`
+    return get(urls.productFilter + params)
+  },
+  getCatalogs: function (id, country, lang) {
+    let params = `?country=${country}&lang=${lang}`
+    return get(urls.catalogs + id + params)
   }
 }
