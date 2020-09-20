@@ -9,7 +9,7 @@ function App(props) {
   const {loginSuccess} = props
   return (
     <>
-      <CustomHead title={'پلازیو ، پلتفرم خرید و فروش اینترنتی کالا در ایران و خاورمیانه'}/>
+      <CustomHead/>
       <div className={styles.container}>
         <h1>خانه</h1>
         {

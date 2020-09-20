@@ -16,7 +16,7 @@ function Products(props) {
     router.push('/products/' + id)
   }
   return <div className={styles.container}>
-    <CustomHead title={'پلازیو ، پلتفرم خرید و فروش اینترنتی کالا در ایران و خاورمیانه'}/>
+    <CustomHead />
 
     <main className={styles.main}>
       <h1 className={styles.title}>

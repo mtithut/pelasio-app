@@ -1,14 +1,22 @@
 import Api from "../../api";
 import React from "react";
+import styles from "../../styles/Home.module.css";
+import CustomHead from "../../components/head";
+import ProductCard from "../../components/product/card";
 
 function Product(props) {
   const {product} = props
-  return <div className="card">
-    <img src="img_avatar.png" alt="Avatar" />
-      <div className="container">
-        <h4><b>John Doe</b></h4>
-        <p>Architect & Engineer</p>
-      </div>
+  console.log('product',product)
+  return <div className={styles.container}>
+    <CustomHead />
+
+    <main className={styles.main}>
+      <h1 className={styles.title}>
+        به پلازیو خوش آمدید
+      </h1>
+
+
+    </main>
   </div>
 }
 

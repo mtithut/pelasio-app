@@ -84,7 +84,7 @@ function Register(props) {
   }
 
   return <>
-    <CustomHead title={'پلازیو ، پلتفرم خرید و فروش اینترنتی کالا در ایران و خاورمیانه'}/>
+    <CustomHead/>
     <div className={styles.container}>
       <h1>حساب کاربری خود را ایجاد کنید</h1>
       <div className={styles.success} hidden={!registerSuccess}>
