@@ -1,0 +1,8 @@
+const ActionType = {
+  ADD_CART_INFO: 'ADD_CART_INFO',
+
+  CART_PENDING: 'ADD_CART_PENDING',
+  CART_SUCCESS: 'ADD_CART_SUCCESS',
+  CART_FAILED: 'ADD_CART_FAILED',
+}
+export default ActionType

@@ -11,9 +11,11 @@ export const urls = {
   productSearch: '/v1/customers/products/search/',
   productFilter: '/v1/customers/products/filter/',
   catalogs: '/v1/customers/catalogs/',
+  carts: '/v1/customers/carts',
+  gustToken: '/v1/customers/guest/token'
 }
 
-const post = function (url, headers = {}, body = '') {
+const post = function (url, body = '', headers = {}) {
   return axios.post(baseUrl + url, body, {headers: headers})
     .then((response) => response.data)
     .catch((error) => {
@@ -21,8 +23,15 @@ const post = function (url, headers = {}, body = '') {
     });
 };
 
-const put = function (url, headers = {}, body = '') {
+const put = function (url, body = '', headers = {}) {
   return axios.put(baseUrl + url, body, {headers: headers, /*withCredentials: true*/})
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error && error.response && error.response.data;
+    });
+};
+const patch = function (url, body = '', headers = {}) {
+  return axios.patch(baseUrl + url, body, {headers: headers, /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
       throw error && error.response && error.response.data;
@@ -51,10 +60,11 @@ export default {
   post: post,
   put: put,
   delete: deleteCall,
+  getGustToken: () => get(urls.gustToken),
   getCountries: () => get(urls.countries),
   login: function (user, pass) {
     let data = {username: user, password: pass}
-    return post(urls.login, {}, data)
+    return post(urls.login, data)
   },
   register: function (firstname, lastname, email, country, password, passwordRep) {
     let data = {
@@ -62,7 +72,7 @@ export default {
       email: email, password: password, password_confirmation: passwordRep
     }
 
-    return post(urls.register, {}, data)
+    return post(urls.register, data)
   },
   getCategory: () => get(urls.categories),
   getProductSearch: function (category, limit, sort, inStock, lang) {
@@ -76,5 +86,24 @@ export default {
   getCatalogs: function (id, country, lang) {
     let params = `?country=${country}&lang=${lang}`
     return get(urls.catalogs + id + params)
+  },
+  getCart: function (cartId) {
+    return get(`${urls.carts}/${cartId}/refresh`)
+  },
+  addToCart: function (id, quantity) {
+    let data = {
+      quantity: quantity,
+      unique_id: id
+    }
+    return post(urls.carts, data)
+  },
+  cartIncreaseItem: function (cartId, itemId) {
+    return patch(`${urls.carts}/${cartId}/items/${itemId}/increase`)
+  },
+  cartDecreaseItem: function (cartId, itemId) {
+    return patch(`${urls.carts}/${cartId}/items/${itemId}/decrease`)
+  },
+  cartsDeleteItem: function (cartId, itemId) {
+    return deleteCall(`${urls.carts}/${cartId}/items/${itemId}`)
   }
 }

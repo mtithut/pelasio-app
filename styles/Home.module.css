@@ -139,8 +139,9 @@
   width: 200px;
   height: 200px;
 }
+
 .card span {
-  white-space: nowrap ;
+  white-space: nowrap;
 }
 
 .logo {
@@ -152,4 +153,22 @@
     width: 100%;
     flex-direction: column;
   }
+}
+
+.catalog {
+  margin: 0.5rem;
+  flex-basis: 90%;
+  /*padding: 1rem;*/
+  text-align: center;
+  color: inherit;
+}
+
+.catalog div {
+  margin: 4px;
+  padding: 8px;
+}
+
+.catalog button {
+  margin: 4px;
+  padding: 8px;
 }

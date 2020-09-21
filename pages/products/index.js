@@ -29,7 +29,7 @@ function Products(props) {
           data.result.map(product => <ProductCard key={`pro-${product.unique_id}`} name={product.name}
                                                   logo={product.default_photo}
                                                   pricing={product.pricing}
-                                                  onClick={event => onClickItem(product.unique_id)}/>)
+                                                  onClick={event => onClickItem(product.catalog_unique_id)}/>)
 
         }
       </div>
