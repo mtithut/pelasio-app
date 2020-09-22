@@ -25,3 +25,11 @@ export const register = (firstname, lastname, email, country, password, password
     .catch(error => dispatch({type: ActionType.REGISTER_FAILED, payload: error})
     )
 };
+
+export const getGustToken = () => (dispatch) => {
+  dispatch({type: ActionType.GUST_TOKEN_PENDING})
+  Api.getGustToken()
+    .then(data => dispatch({type: ActionType.GUST_TOKEN_SUCCESS, payload: data}))
+    .catch(error => dispatch({type: ActionType.GUST_TOKEN_FAILED, payload: error})
+    )
+};

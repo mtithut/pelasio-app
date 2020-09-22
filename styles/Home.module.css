@@ -157,10 +157,11 @@
 
 .catalog {
   margin: 0.5rem;
-  flex-basis: 90%;
-  /*padding: 1rem;*/
+  flex-basis: 20%;
+  padding: 1rem;
   text-align: center;
   color: inherit;
+  text-decoration: none;
 }
 
 .catalog div {
@@ -169,6 +170,88 @@
 }
 
 .catalog button {
+  margin: 4px;
+  padding: 8px;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  flex: 1;
+  width: 100%;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  border: 1px #eaeaea solid;
+  padding: 16px;
+  margin-bottom: 16px;
+
+}
+
+.header div {
+  flex-basis: 20%;
+  padding: 4px;
+  text-align: center;
+}
+
+.cartNumber {
+  padding: 2px;
+  color: red;
+}
+
+.cartItems {
+  flex-basis: 70%;
+  padding: 1rem;
+  text-align: left;
+}
+
+.cartPayment {
+  margin: 0.5rem;
+  flex-basis: 20%;
+  padding: 1rem;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.cartPayment button{
+  padding: 8px;
+  margin: 8px;
+}
+
+.cartItemCard {
+  margin: 0.5rem;
+  flex-basis: 70%;
+  padding: 1rem;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  border: 1px solid #eaeaea;
+  border-radius: 10px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cartItemCard img {
+  width: 200px;
+  margin: 16px;
+}
+
+.detailCart {
+  margin: 0.5rem;
+  flex-basis: 20%;
+  padding: 1rem;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+}
+
+.detailCart button {
   margin: 4px;
   padding: 8px;
 }

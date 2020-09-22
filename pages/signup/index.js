@@ -4,12 +4,12 @@ import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
 import {bindActionCreators} from "redux";
-import {login, resetLogin} from "../../redux/signup/actions";
+import {login, resetLogin} from "../../redux/auth/actions";
 import {
   isLoginFailed,
   isLoginSuccess,
   selectLogin,
-} from "../../redux/signup/reducer";
+} from "../../redux/auth/reducer";
 import Head from "next/head";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from 'yup';
@@ -112,7 +112,6 @@ function Login(props) {
 const mapStateToProps = (state) => {
   console.log(state)
   return Object.assign({},
-
     {
       loginSuccess: isLoginSuccess(state),
       loginFailed: isLoginFailed(state),

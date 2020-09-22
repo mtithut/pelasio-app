@@ -14,10 +14,9 @@ import {
   isRegisterSuccess,
   selectRegister,
 
-} from "../../redux/signup/reducer";
-import Head from "next/head";
+} from "../../redux/auth/reducer";
 import {bindActionCreators} from "redux";
-import {register, resetRegister} from "../../redux/signup/actions";
+import {register, resetRegister} from "../../redux/auth/actions";
 import Api from '../../api'
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";

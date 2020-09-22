@@ -1,12 +1,17 @@
 import Api from "../../api";
 import React, {useEffect, useState} from "react";
 import styles from "../../styles/Home.module.css";
-import CustomHead from "../../components/head";
-import ProductCard from "../../components/product/card";
+import {connect} from "react-redux";
+import {selectCartInfo} from "../../redux/cart/reducer";
+import {bindActionCreators} from "redux";
+import {addToCart} from "../../redux/cart/actions";
+import Header from "../../components/header";
+import {isLoginSuccess} from "../../redux/auth/reducer";
+import {useRouter} from "next/router";
 
 function Product(props) {
-  const {productRes} = props
-
+  const {productRes, addToCart, isLogin} = props
+  const router = useRouter()
   const [selectedVariation, setVariation] = useState(undefined)
   const [quantity, setQuantity] = useState(0)
   const [info, setInfo] = useState({
@@ -42,13 +47,16 @@ function Product(props) {
     setInfo({name: name, description: description, photo: photo, variations: variations})
 
   }
-  const handleSubmit = (value) => {
-    console.log(value)
+
+  const onClickBuy = () => {
+    if (!isLogin) {
+      router.push('/signup')
+    } else if (selectedVariation && quantity)
+      addToCart(selectedVariation.unique_id, quantity)
   }
 
   const onChangeValues = (type, value) => {
     if (type === 'Variation') {
-      console.log(selectedVariation.unique_id, value.unique_id)
       setVariation(value)
     } else if (type === 'Quality') {
       if (value >= selectedVariation.minimum_quantity && value <= selectedVariation.maximum_quantity)
@@ -63,12 +71,12 @@ function Product(props) {
 
 
   return <div className={styles.container}>
-    <CustomHead/>
+    <Header/>
 
     <main className={styles.main}>
       <div className={styles.grid}>
         <div className={styles.catalog}>
-          <img src={(info.photo && info.photo.photo_file && info.photo.photo_file.medium) || ''} alt={info.name}/>
+          <img src={(info.photo && info.photo.photo_file && info.photo.photo_file.small) || ''} alt={info.name}/>
         </div>
         <div className={styles.catalog}>
           <h1>{info.name}</h1>
@@ -99,7 +107,10 @@ function Product(props) {
           <button onClick={() => onChangeValues('Quality', quantity - 1)}>-</button>
         </div>
         <div className={styles.catalog}>
-          <button onClick={handleSubmit}> پرداخت کنید</button>
+          <button disabled={!selectedVariation || !quantity || !selectedVariation.stock || !isLogin}
+                  onClick={onClickBuy}>{selectedVariation && selectedVariation.stock ? 'خرید کنید' : 'ناموجود'}
+          </button>
+          {!isLogin && <button onClick={() => router.push('/signup')}>ورود</button>}
         </div>
       </div>
 
@@ -118,4 +129,13 @@ export async function getServerSideProps(context) {
   }
 }
 
-export default Product
+const mapStateToProps = state => ({
+  cartInfo: selectCartInfo(state),
+  isLogin: isLoginSuccess(state),
+});
+
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  addToCart
+}, dispatch);
+export default connect(mapStateToProps, mapDispatchToProps)(Product);

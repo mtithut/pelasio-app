@@ -13,7 +13,7 @@ export const initialState = {
   status: API_CALL_STATUS.INIT
 };
 
-export const reducerBuilder = (successType, failedType, pendingType, initState) => (state = initialState, action = {}) => {
+export const reducerBuilder = (successType, failedType, pendingType, initState = INIT_STATE) => (state = initialState, action = {}) => {
   switch (action.type) {
     case initState:
       return Object.assign({}, initialState);

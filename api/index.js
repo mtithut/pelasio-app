@@ -105,5 +105,8 @@ export default {
   },
   cartsDeleteItem: function (cartId, itemId) {
     return deleteCall(`${urls.carts}/${cartId}/items/${itemId}`)
-  }
+  },
+  cartsRefresh: function (cartId, country, lang) {
+    return get(`${urls.carts}/${cartId}/refresh?country=${country}&lang=${lang}`)
+  },
 }
