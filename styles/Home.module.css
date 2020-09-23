@@ -255,3 +255,22 @@
   margin: 4px;
   padding: 8px;
 }
+.addressGrid{
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 80%;
+  margin-top: 3rem;
+}
+
+.addressItem{
+  padding: 4px;
+  margin: 4px;
+}
+.addressItem button,
+.addressItem select,
+.addressItem input{
+  padding: 8px;
+  margin: 4px;
+}

@@ -74,7 +74,9 @@ function Cart(props) {
       </div>
       <div className={styles.cartPayment}>
         <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
-        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}> ادامه فرایدند پرداخت</button>
+        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
+                onClick={()=>router.push('/cart/address')}
+        > ادامه فرایدند پرداخت</button>
 
       </div>
 

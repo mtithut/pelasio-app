@@ -1,5 +1,6 @@
 import ActionType from './actionType'
 import Api from '../../api'
+import {getTokenAccess} from "../../components/LocalStorage";
 
 export const addToCart = (itemId, quality) => (dispatch) => {
   dispatch({type: ActionType.CART_PENDING})

@@ -1,38 +1,76 @@
 import {connect} from "react-redux";
 import {selectCartInfo} from "../../redux/cart/reducer";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styles from '../../styles/Home.module.css'
 import Link from "next/link";
-import {isLoginSuccess, selectLogin, selectUserinfo} from "../../redux/auth/reducer";
+import {isLoginSuccess, selectGustTokenInfo, selectLogin, selectUserinfo} from "../../redux/auth/reducer";
 import CustomHead from "../head";
 import {useRouter} from "next/router";
+import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../LocalStorage";
+import {bindActionCreators} from "redux";
+import {cartRefresh} from "../../redux/cart/actions";
+import {getGustToken, resetLogin} from "../../redux/auth/actions";
 
 function Header(props) {
-  const {cartInfo, isLogin, userInfo} = props
+  const {resetLogin, cartRefresh, cartInfo, isLogin, userInfo, getGustToken, gustTokenInfo} = props
+  const [user, setUser] = useState({})
   const router = useRouter()
+
+  useEffect(() => {
+    setTimeout(() => {
+      setUser(userInfo || JSON.parse(getUser()))
+    }, 400)
+
+    const token = getTokenAccess()
+    if (token) {
+      if (token && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
+    } else
+      getGustToken()
+  }, [])
+
+  useEffect(() => {
+    setTimeout(() => {
+      setUser(userInfo || JSON.parse(getUser()))
+    }, 400)
+    if (gustTokenInfo && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
+  }, [gustTokenInfo])
 
   const getCartItemCount = () => {
     return cartInfo && cartInfo.items && cartInfo.items.length
   }
+  const onLogout = () => {
+    resetLogin()
+    clearUserInfo()
+    getGustToken()
+    router.push('/')
+  }
 
   const getUserName = () => {
-    return (userInfo && userInfo.firstname && userInfo.lastname) ? `${userInfo.firstname} ${userInfo.lastname}` : ''
+
+    // const user = userInfo || JSON.parse(getUser())
+
+    console.log('user', user)
+    return (user && user.firstname && user.lastname) ? `${user.firstname} ${user.lastname}` : ''
   }
-  const goToCarts = () => {
-    if (getCartItemCount()) router.push('/cart')
-  }
+
   return <>
     <CustomHead/>
     <div className={styles.header}>
       <div>
-        {isLogin ? <span>{getUserName()}</span> : <Link href={'/signup'}> ورود</Link>}
+        {user ? <><span>{getUserName()}</span>
+          <button onClick={onLogout}>logout</button>
+        </> : <Link href={'/signup'}> ورود</Link>}
       </div>
       <div>
         {<Link href={'/'}> خانه</Link>}
       </div>
 
-      <div onClick={goToCarts}>
-        سبد خرید<span className={styles.cartNumber}>{getCartItemCount()}</span>
+      <div>
+        <Link href={'/cart'}>
+          <span>
+          سبد خرید<span className={styles.cartNumber}>{getCartItemCount()}</span>
+          </span>
+        </Link>
       </div>
 
 
@@ -43,7 +81,14 @@ function Header(props) {
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
   isLogin: isLoginSuccess(state),
-  userInfo: selectUserinfo(state)
+  userInfo: selectUserinfo(state),
+  gustTokenInfo: selectGustTokenInfo(state)
 });
 
-export default connect(mapStateToProps, null)(Header);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  cartRefresh,
+  resetLogin,
+  getGustToken
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

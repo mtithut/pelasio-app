@@ -1,5 +1,6 @@
 import ActionType from './actionType'
 import Api from '../../api'
+import {setCartId, setTokenAccess, setUser} from "../../components/LocalStorage";
 
 export const resetLogin = () => (dispatch) => {
   dispatch({type: ActionType.LOGIN_INITIAL})
@@ -7,7 +8,12 @@ export const resetLogin = () => (dispatch) => {
 export const login = (username, password) => (dispatch) => {
   dispatch({type: ActionType.LOGIN_PENDING})
   Api.login(username, password)
-    .then(data => dispatch({type: ActionType.LOGIN_SUCCESS, payload: data}))
+    .then(res => {
+      res && res.data && res.data && setTokenAccess(res.data.access_token)
+      res && res.data && res.data && setUser(JSON.stringify(res.data.user))
+      res && res.data && res.data.user && res.data.user.cart_id && setCartId(res.data.user.cart_id)
+      dispatch({type: ActionType.LOGIN_SUCCESS, payload: res})
+    })
     .catch(error => {
         console.log('error', error)
         dispatch({type: ActionType.LOGIN_FAILED, payload: error})
@@ -29,7 +35,11 @@ export const register = (firstname, lastname, email, country, password, password
 export const getGustToken = () => (dispatch) => {
   dispatch({type: ActionType.GUST_TOKEN_PENDING})
   Api.getGustToken()
-    .then(data => dispatch({type: ActionType.GUST_TOKEN_SUCCESS, payload: data}))
+    .then(res => {
+      res && res.data && res.data && setTokenAccess(res.data.access_token)
+      res && res.data && res.data && res.data.cart_id && setCartId(res.data.cart_id)
+      dispatch({type: ActionType.GUST_TOKEN_SUCCESS, payload: res})
+    })
     .catch(error => dispatch({type: ActionType.GUST_TOKEN_FAILED, payload: error})
     )
 };

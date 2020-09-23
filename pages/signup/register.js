@@ -16,7 +16,7 @@ import {
 
 } from "../../redux/auth/reducer";
 import {bindActionCreators} from "redux";
-import {register, resetRegister} from "../../redux/auth/actions";
+import {login, register, resetRegister} from "../../redux/auth/actions";
 import Api from '../../api'
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
@@ -42,15 +42,21 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 });
 
 function Register(props) {
-  const {registerData, registerFailed, registerSuccess, register, resetRegister, countries} = props
+  const {registerData, registerFailed, registerSuccess, register, login, resetRegister, countries} = props
   const {data} = countries
   const router = useRouter()
   const [countryList, setCountries] = useState(undefined)
+  const [userPass, setUserPass] = useState({user: undefined, pass: undefined})
 
   useEffect(() => {
     if (registerFailed)
       resetRegister()
   }, [])
+
+  useEffect(() => {
+    login(userPass.user, userPass.pass)
+    router.push('/')
+  }, [registerSuccess])
 
   useEffect(() => {
     if (Array.isArray(data) && data.length)
@@ -59,6 +65,7 @@ function Register(props) {
 
   const onClickRegister = (values) => {
     register && register(values.firstname, values.lastname, values.email, values.country, values.password, values.passwordConfirmation)
+    setUserPass({user: values.email, pass: values.password})
 
   }
   const onClickGoLogin = () => {
@@ -81,6 +88,7 @@ function Register(props) {
     }
     return alertMessage
   }
+
 
   return <>
     <CustomHead/>
@@ -183,6 +191,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   register,
+  login,
   resetRegister
 }, dispatch);
 

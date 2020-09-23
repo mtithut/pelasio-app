@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {getTokenAccess} from "../components/LocalStorage";
 
 export const baseUrl = 'http://api.pelazio.test';
 // export const baseUrl = 'http://192.168.101.88';
@@ -7,7 +8,9 @@ export const urls = {
   login: '/v1/customers/users/auth/login',
   register: '/v1/customers/users/auth/register',
   countries: '/v1/baseinfo/countries',
+  provinces: '/v1/baseinfo/provinces',
   categories: '/v1/baseinfo/categories',
+  addresses: '/v1/customers/addresses',
   productSearch: '/v1/customers/products/search/',
   productFilter: '/v1/customers/products/filter/',
   catalogs: '/v1/customers/catalogs/',
@@ -38,15 +41,15 @@ const patch = function (url, body = '', headers = {}) {
     });
 };
 
-const get = function (url, params = {}) {
-  return axios.get(baseUrl + url, {params: params, /*withCredentials: true*/})
+const get = function (url, params = {}, headers = {}) {
+  return axios.get(baseUrl + url, {params: params, headers: headers /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
       throw error && error.response && error.response.data;
     });
 };
 
-const deleteCall = function (url, headers = {}, body = '') {
+const deleteCall = function (url, body = '', headers = {}) {
   return axios.delete(baseUrl + url, {headers: headers,/* withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
@@ -62,6 +65,8 @@ export default {
   delete: deleteCall,
   getGustToken: () => get(urls.gustToken),
   getCountries: () => get(urls.countries),
+  getProvinces: (countryId) => get(`${urls.countries}/${countryId}/provinces`),
+  getCities: (provinceId) => get(`${urls.provinces}/${provinceId}/cities`),
   login: function (user, pass) {
     let data = {username: user, password: pass}
     return post(urls.login, data)
@@ -88,25 +93,46 @@ export default {
     return get(urls.catalogs + id + params)
   },
   getCart: function (cartId) {
-    return get(`${urls.carts}/${cartId}/refresh`)
+    const token = getTokenAccess()
+    const headers = {Authorization: `Bearer ${token}`}
+    return get(`${urls.carts}/${cartId}/refresh`, undefined, headers)
   },
   addToCart: function (id, quantity) {
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
     let data = {
       quantity: quantity,
       unique_id: id
     }
-    return post(urls.carts, data)
+    return post(urls.carts, data, headers)
   },
   cartIncreaseItem: function (cartId, itemId) {
-    return patch(`${urls.carts}/${cartId}/items/${itemId}/increase`)
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return patch(`${urls.carts}/${cartId}/items/${itemId}/increase`, undefined, headers)
   },
   cartDecreaseItem: function (cartId, itemId) {
-    return patch(`${urls.carts}/${cartId}/items/${itemId}/decrease`)
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return patch(`${urls.carts}/${cartId}/items/${itemId}/decrease`, undefined, headers)
   },
   cartsDeleteItem: function (cartId, itemId) {
-    return deleteCall(`${urls.carts}/${cartId}/items/${itemId}`)
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return deleteCall(`${urls.carts}/${cartId}/items/${itemId}`, {}, headers)
   },
   cartsRefresh: function (cartId, country, lang) {
-    return get(`${urls.carts}/${cartId}/refresh?country=${country}&lang=${lang}`)
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return get(`${urls.carts}/${cartId}/refresh?country=${country}&lang=${lang}`, undefined, headers)
   },
+  getAddresses: () => {
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return get(urls.addresses, undefined, headers)
+  },
+  addAddress: () => {
+  },
+  updateAddress: () => {
+  }
 }
