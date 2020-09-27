@@ -45,9 +45,9 @@ function Login(props) {
     router.push('/signup/register')
   }
   const onClickLogin = (values) => {
-    // if (values.email && isValidEmail(values.email) && values.password && isValidPassword(values.password)) {
-    login(values.email, values.password)
-    // }
+    if (values.email && values.password) {
+      login(values.email, values.password)
+    }
 
   }
   // const getErrorMessage = () => {

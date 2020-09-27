@@ -10,6 +10,7 @@ import {selectGustTokenInfo} from "../../redux/auth/reducer";
 import {getGustToken} from "../../redux/auth/actions";
 import Header from "../../components/header";
 import withMainLayout from "../../components/mainLayout";
+import {clearUserInfo, getCartId, getTokenAccess} from "../../components/localStorage";
 
 function Cart(props) {
   const {
@@ -25,33 +26,36 @@ function Cart(props) {
 
   useEffect(() => {
     if (!cartInfo)
-      if (gustTokenInfo && gustTokenInfo.cart_id)
-        cartRefresh(gustTokenInfo.cart_id, 'ir', 'fa')
-      else getGustToken()
+      if (getTokenAccess() && getCartId())
+        cartRefresh(getCartId(), 'ir', 'fa')
+      else {
+        clearUserInfo()
+        getGustToken()
+      }
   }, [])
 
   useEffect(() => {
     if (!cartInfo)
-      if (gustTokenInfo && gustTokenInfo.cart_id)
-        cartRefresh(gustTokenInfo.cart_id, 'ir', 'fa')
+      if (getTokenAccess() && getCartId())
+        cartRefresh(getCartId(), 'ir', 'fa')
   }, [gustTokenInfo])
 
   const onClickItem = (catalogId) => {
     router.push(`/products/${catalogId}`)
   }
   const increaseItem = (quantity, maxQuantity, itemId) => {
-    if (cartInfo && cartInfo.unique_id && quantity < maxQuantity) {
-      cartIncrease(cartInfo.unique_id, itemId)
+    if (getCartId() && quantity < maxQuantity) {
+      cartIncrease(getCartId(), itemId)
     }
   }
   const decreaseItem = (quantity, minQuantity, itemId) => {
-    if (cartInfo && cartInfo.unique_id && quantity > minQuantity) {
-      cartDecrease(cartInfo.unique_id, itemId)
+    if (getCartId() && quantity > minQuantity) {
+      cartDecrease(getCartId(), itemId)
     }
   }
   const deleteItem = (itemId) => {
-    if (cartInfo && cartInfo.unique_id) {
-      cartDelete(cartInfo.unique_id, itemId)
+    if (getCartId()) {
+      cartDelete(getCartId(), itemId)
     }
   }
   return <div className={styles.grid}>

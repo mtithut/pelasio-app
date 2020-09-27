@@ -21,7 +21,7 @@ function Product(props) {
     description: '',
     variations: [],
   })
-  console.log('product', productRes)
+  // console.log('product', productRes)
 
   useEffect(() => {
     initProductInfo()

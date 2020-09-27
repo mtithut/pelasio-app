@@ -75,8 +75,10 @@ export default {
   getCities: (provinceId) => get(`${urls.provinces}/${provinceId}/cities`),
   getBanks: () => get(urls.banks),
   login: function (user, pass) {
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
     let data = {username: user, password: pass}
-    return post(urls.login, data)
+    return post(urls.login, data, headers)
   },
   register: function (firstname, lastname, email, country, password, passwordRep) {
     let data = {
@@ -87,17 +89,14 @@ export default {
     return post(urls.register, data)
   },
   getCategory: () => get(urls.categories),
-  getProductSearch: function (category, limit, sort, inStock, lang) {
-    let params = `?category=${category}&limit=${limit}&sort=${sort}&in-stock=${inStock}&lang=${lang}`
-    return get(urls.productSearch + params)
-  },
+  getProductSearch: (filters = {}) => get(urls.productSearch, filters),
   getProductFilter: function (category, limit, sort, inStock, lang) {
-    let params = `?category=${category}&limit=${limit}&sort=${sort}&in-stock=${inStock}&lang=${lang}`
-    return get(urls.productFilter + params)
+    const params = {category: category, limit: limit, sort: sort, 'in-stock': inStock, lang: lang}
+    return get(urls.productFilter, params)
   },
   getCatalogs: function (id, country, lang) {
-    let params = `?country=${country}&lang=${lang}`
-    return get(urls.catalogs + id + params)
+    let params = {country: country, lang: lang}
+    return get(urls.catalogs + id, params)
   },
   getCart: function (cartId) {
     const token = getTokenAccess()

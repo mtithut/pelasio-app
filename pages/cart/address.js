@@ -11,7 +11,7 @@ import {connect} from "react-redux";
 import {useRouter} from "next/router";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
-import {getCartId, getTokenAccess, getUser} from "../../components/localStorage";
+import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../../components/localStorage";
 import ConfirmationProfile from '../../components/confirmationProfile'
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
@@ -79,12 +79,15 @@ function Address(props) {
 
     if (getTokenAccess() && getCartId()) {
       cartRefresh(getCartId(), 'ir', 'fa')
-    } else getGustToken()
+    } else {
+      clearUserInfo()
+      getGustToken()
+    }
   }, [])
 
   useEffect(() => {
-    if (getTokenAccess()) {
-      getCartId() && cartRefresh(getCartId(), 'ir', 'fa')
+    if (getTokenAccess() && getCartId()) {
+      cartRefresh(getCartId(), 'ir', 'fa')
       loadAddress()
     }
   }, [gustTokenInfo])
@@ -100,7 +103,6 @@ function Address(props) {
         })
   }
   const loadCities = (provinceId) => {
-    console.log('loadCities')
     Api.getCities(provinceId)
       .then(res => {
         if (res && res.data && Array.isArray(res.data)) {

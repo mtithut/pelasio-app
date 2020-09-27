@@ -13,14 +13,14 @@ import {getGustToken, resetLogin} from "../../redux/auth/actions";
 
 function Header(props) {
   const {resetLogin, cartRefresh, cartInfo, isLogin, userInfo, getGustToken, gustTokenInfo} = props
-  const [user, setUser] = useState({})
+  const [user, setUser] = useState(undefined)
   const router = useRouter()
 
   useEffect(() => {
     setTimeout(() => {
       setUser(userInfo || JSON.parse(getUser()))
-    }, 400)
-
+    }, 0)
+    setUser(userInfo || JSON.parse(getUser()))
     const token = getTokenAccess()
     if (token) {
       if (token && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
@@ -29,9 +29,9 @@ function Header(props) {
   }, [])
 
   useEffect(() => {
-    setTimeout(() => {
-      setUser(userInfo || JSON.parse(getUser()))
-    }, 400)
+    // setTimeout(() => {
+
+    // }, 0)
     if (gustTokenInfo && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
   }, [gustTokenInfo])
 
@@ -46,10 +46,6 @@ function Header(props) {
   }
 
   const getUserName = () => {
-
-    // const user = userInfo || JSON.parse(getUser())
-
-    console.log('user', user)
     return (user && user.firstname && user.lastname) ? `${user.firstname} ${user.lastname}` : ''
   }
 
@@ -57,20 +53,24 @@ function Header(props) {
     <CustomHead/>
     <div className={styles.header}>
       <div>
-        {user ? <><span>{getUserName()}</span>
-          <button onClick={onLogout}>logout</button>
-        </> : <Link href={'/signup'}> ورود</Link>}
-      </div>
-      <div>
-        {<Link href={'/'}> خانه</Link>}
-      </div>
-
-      <div>
         <Link href={'/cart'}>
           <span>
           سبد خرید<span className={styles.cartNumber}>{getCartItemCount()}</span>
           </span>
         </Link>
+      </div>
+
+      <div>
+        {user ? <><span>{getUserName()}</span>
+          <button onClick={onLogout}>logout</button>
+        </> : <Link href={'/signup'}> ورود</Link>}
+      </div>
+
+
+
+
+      <div>
+        {<Link href={'/'}> خانه</Link>}
       </div>
 
 

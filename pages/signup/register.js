@@ -55,8 +55,10 @@ function Register(props) {
   }, [])
 
   useEffect(() => {
-    login(userPass.user, userPass.pass)
-    router.push('/')
+    if (registerSuccess && userPass.user && userPass.pass) {
+      login(userPass.user, userPass.pass)
+      router.push('/')
+    }
   }, [registerSuccess])
 
   useEffect(() => {
@@ -69,7 +71,7 @@ function Register(props) {
     setUserPass({user: values.email, pass: values.password})
 
   }
-  const onClickGoLogin = () => {
+  const redirectLogin = () => {
     router.push('/signup')
   }
 
@@ -155,7 +157,7 @@ function Register(props) {
 
             <div>
               <button type={'submit'} disabled={isSubmitting}>ثبت نام</button>
-              <button type={'button'} onClick={onClickGoLogin}>ورود</button>
+              <button type={'button'} onClick={redirectLogin}>ورود</button>
             </div>
 
 
@@ -169,16 +171,12 @@ function Register(props) {
 
 export async function getStaticProps() {
   let countries = await Api.getCountries()
-  // By returning { props: posts }, the Blog component
-  // will receive `posts` as a prop at build time
   return {
     props: {
       countries,
     },
   }
 }
-
-// export default Register
 const mapStateToProps = (state) => {
   console.log(state)
   return Object.assign({},

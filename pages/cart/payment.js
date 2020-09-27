@@ -30,6 +30,7 @@ function Payment(props) {
           if (res.data.length) setSelectedBack(res.data[0])
         }
       })
+
     if (getTokenAccess() && getCartId() && !cartInfo) {
       cartRefresh(getCartId(), 'ir', 'fa')
     } else if (!getTokenAccess())
