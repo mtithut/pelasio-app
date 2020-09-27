@@ -6,7 +6,7 @@ import Link from "next/link";
 import {isLoginSuccess, selectGustTokenInfo, selectLogin, selectUserinfo} from "../../redux/auth/reducer";
 import CustomHead from "../head";
 import {useRouter} from "next/router";
-import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../LocalStorage";
+import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../localStorage";
 import {bindActionCreators} from "redux";
 import {cartRefresh} from "../../redux/cart/actions";
 import {getGustToken, resetLogin} from "../../redux/auth/actions";

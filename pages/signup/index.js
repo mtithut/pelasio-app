@@ -54,8 +54,7 @@ function Login(props) {
     if (LoginData && LoginData.errors && LoginData.errors.error && LoginData.errors.error.code) {
       if (LoginData.errors.message) {
         alertMessage = <span>{LoginData.errors.message}</span>
-      } else if (LoginData.errors.error && LoginData.errors.error.data &&
-        LoginData.errors.error.data) {
+      } else if (LoginData.errors.error && LoginData.errors.error.data) {
         let messages = []
         Object.values(LoginData.errors.error.data).map(msgs => {
           messages = messages.concat(msgs)

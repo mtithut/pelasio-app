@@ -7,6 +7,16 @@
   align-items: center;
 }
 
+.container input {
+  padding: 4px;
+  margin: 4px;
+}
+
+.container button {
+  padding: 8px;
+  margin: 4px;
+}
+
 .main {
   padding: 5rem 0;
   flex: 1;
@@ -220,7 +230,8 @@
   border-radius: 10px;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
-.cartPayment button{
+
+.cartPayment button {
   padding: 8px;
   margin: 8px;
 }
@@ -255,7 +266,8 @@
   margin: 4px;
   padding: 8px;
 }
-.addressGrid{
+
+.cartGrid {
   display: flex;
   align-items: start;
   justify-content: space-between;
@@ -264,13 +276,17 @@
   margin-top: 3rem;
 }
 
-.addressItem{
+.cartItem {
   padding: 4px;
   margin: 4px;
 }
-.addressItem button,
-.addressItem select,
-.addressItem input{
+
+.cartItem button,
+.cartItem select,
+.cartItem input {
   padding: 8px;
   margin: 4px;
+}
+.cartItemCard img{
+  width: 64px;
 }

@@ -11,7 +11,9 @@ import {connect} from "react-redux";
 import {useRouter} from "next/router";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
-import {getCartId, getTokenAccess} from "../../components/LocalStorage";
+import {getCartId, getTokenAccess, getUser} from "../../components/localStorage";
+import ConfirmationProfile from '../../components/confirmationProfile'
+import {getErrorMessage} from "../../components/utility/respMessageHandler";
 
 const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
   address_line_one: Yup.string()
@@ -31,11 +33,10 @@ const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
     .required('Required'),
   city_id: Yup.number()
     .required('Required'),
-
   receiver: Yup.string()
     .notRequired(),
   phone: Yup.string()
-    .matches(/9\d{9}/, 'Is not in correct format phone')
+    .matches(/09\d{9}/, 'Is not in correct format phone')
     .notRequired(),
   prefix: Yup.string()
     .notRequired()
@@ -48,11 +49,13 @@ function Address(props) {
     gustTokenInfo,
     getGustToken
   } = props
-  const [selectedAddress, setSelectedAddress] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState({})
   const [addresses, setAddresses] = useState([])
   const [countries, setCountries] = useState([])
   const [provinces, setProvinces] = useState([])
   const [cities, setCities] = useState([])
+  const [confirmationProfileView, setConfirmationProfileView] = useState(false)
+  const [{isSuccess, isError, message}, setAlertMessage] = useState({isSuccess: false, isError: false, message: ''})
 
   const router = useRouter()
 
@@ -96,6 +99,7 @@ function Address(props) {
         })
   }
   const loadCities = (provinceId) => {
+    console.log('loadCities')
     Api.getCities(provinceId)
       .then(res => {
         if (res && res.data && Array.isArray(res.data)) {
@@ -110,141 +114,178 @@ function Address(props) {
   }
 
   const onAddAddress = (values) => {
-    console.log('add address')
-    if (values && values.city_id && cities) {
-      const city = cities.find(city => city.city_id === values.city_id)
-      values.latitude = city.latitude || 35.6864
-      values.longitude = city.longitude || 51.4329
+    console.log('city', values.city_id, cities)
+    if (values && cities) {
+      console.log('city', values.city_id, cities)
+      let city = cities.find(city => city.city_id == values.city_id)
+      if (!city && cities.length) city = cities[0]
+
+      console.log('city', city)
+      values.latitude = city && city.latitude || 35.6864
+      values.longitude = city && city.longitude || 51.4329
     }
     values.prefix = '98'
-    Api.addAddress(values.address_line_one, values.city_id, values.country, values.latitude,
-      values.longitude, values.phone, values.postal_code, values.prefix, values.province,
-      values.receiver, values.title)
+    Api.addAddress(values.title, values.country, values.province, values.city_id, values.address_line_one,
+      values.postal_code, values.latitude, values.longitude, values.phone, values.prefix, values.receiver)
       .then(value => loadAddress())
+      .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
 
   }
+  const onDeleteAddress = (addressId) => {
+    Api.deleteAddress(addressId)
+      .then(res => loadAddress())
+      .catch(reason => {
+        setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
+      })
 
-  return <div
-    // className={styles.container}
-  >
-    <Header/>
-    <h2>افزودن آدرس</h2>
-    <div className={styles.addressGrid}>
-      <div className={styles.cartItemCard}>
-        <Formik
-          initialValues={{
-            title: undefined,
-            address_line_one: undefined,
-            country: 9,
-            province: provinces && provinces.length && provinces[0].city_id,
-            city_id: cities && cities.length && cities[0].city_id,
-            postal_code: undefined,
-            phone: undefined,
-            receiver: undefined
-          }}
-          validationSchema={DisplayingErrorMessagesSchemaAddress}
-          onSubmit={(values, {setSubmitting}) => {
-            setTimeout(() => {
-              setSubmitting(false);
-              onAddAddress(values)
-            }, 400);
-          }}
-        >
-          {({isSubmitting}) => (
-            <Form>
-              <div className={styles.addressGrid}>
-                <div className={styles.addressItem}>
-                  <Field name="title" placeholder={'عنوان'}/>
-                  <ErrorMessage name="title" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field as="select" name="country" placeholder={'کشور'} value={9} disabled>
-                    {
-                      countries && countries.map(country => <option key={`con ${country.country_id}`}
-                                                                    value={country.country_id}>{country.name}</option>)
-                    }
-                  </Field>
-                  <ErrorMessage name="country" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field as="select" placeholder={'استان'}
-                         onSelect={value => loadCities(value)}>
-                    {
-                      provinces && provinces.map(province => <option key={`pro ${province.city_id}`}
-                                                                     value={province.city_id}>{province.name}</option>)
-                    }
-                  </Field>
-                  <ErrorMessage name="province" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field as="select" name="city_id" placeholder={'شهر'}>
-                    {
-                      cities && cities.map(city => <option key={`cty ${city.city_id}`}
-                                                           value={city.city_id}>{city.name}</option>)
-                    }
-                  </Field>
-                  <ErrorMessage name="city_id" component="div" className={styles.error}/>
+  }
+  const onFinalOrder = () => {
+    const user = JSON.parse(getUser())
+    console.log(user)
+    if (user && user.national_code && user.phone) {
+      cartInfo && selectedAddress && Api.selectAddressCart(cartInfo.unique_id, selectedAddress.address_id, 'ir')
+        .then(resp => router.push('/cart/payment'))
+        .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
+
+    } else {
+      setConfirmationProfileView(true)
+    }
+  }
+  if (confirmationProfileView)
+    return <ConfirmationProfile onCancel={() => setConfirmationProfileView(false)}
+                                onSuccess={() => onFinalOrder()}/>
+  else
+    return <div>
+      <Header/>
+      <h2>افزودن آدرس</h2>
+
+      <div className={styles.success} hidden={!isSuccess}>
+        <span>{message}</span>
+      </div>
+      <div className={styles.error} hidden={!isError}>
+        <span>{message}</span>
+      </div>
+
+      <div className={styles.cartGrid}>
+        <div className={styles.cartItemCard}>
+          <Formik
+            initialValues={{
+              title: undefined,
+              address_line_one: undefined,
+              country: 9,
+              province: provinces && provinces.length && provinces[0].city_id,
+              city_id: (cities && cities.length) ? cities[0].city_id : undefined,
+              postal_code: undefined,
+              phone: undefined,
+              receiver: undefined
+            }}
+            validationSchema={DisplayingErrorMessagesSchemaAddress}
+            onSubmit={(values, {setSubmitting}) => {
+              setTimeout(() => {
+                setSubmitting(false);
+                onAddAddress(values)
+              }, 400);
+            }}
+          >
+            {({isSubmitting}) => (
+              <Form onChange={(e) => {
+                if (e.target.name === 'province') loadCities(e.target.value)
+              }}>
+                <div className={styles.cartGrid}>
+                  <div className={styles.cartItem}>
+                    <Field name="title" placeholder={'عنوان'}/>
+                    <ErrorMessage name="title" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field as="select" name="country" placeholder={'کشور'} value={9} disabled>
+                      {
+                        countries && countries.map(country => <option key={`con ${country.country_id}`}
+                                                                      value={country.country_id}>{country.name}</option>)
+                      }
+                    </Field>
+                    <ErrorMessage name="country" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field as="select" name="province" placeholder={'استان'}
+                      /* onChange={value => loadCities(value)}*/>
+                      {
+                        provinces && provinces.map(province => <option key={`pro ${province.city_id}`}
+                                                                       value={province.city_id}>{province.name}</option>)
+                      }
+                    </Field>
+                    <ErrorMessage name="province" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field as="select" name="city_id" placeholder={'شهر'}>
+                      {
+                        cities && cities.map(city => <option key={`cty ${city.city_id}`}
+                                                             value={city.city_id}>{city.name}</option>)
+                      }
+                    </Field>
+                    <ErrorMessage name="city_id" component="div" className={styles.error}/>
+                  </div>
+
+                  <div className={styles.cartItem}>
+                    <Field name="address_line_one" placeholder={'آدرس'}/>
+                    <ErrorMessage name="address_line_one" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field name="postal_code" placeholder={'کدپستی'}/>
+                    <ErrorMessage name="postal_code" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field name="receiver" placeholder={'گیرنده'}/>
+                    <ErrorMessage name="receiver" component="div" className={styles.error}/>
+                  </div>
+                  <div className={styles.cartItem}>
+                    <Field name="phone" placeholder={'شماره مبایل'}/>
+                    <ErrorMessage name="phone" component="div" className={styles.error}/>
+                  </div>
+
+                  <div className={styles.cartItem}>
+                    <button type={'submit'} disabled={isSubmitting}>ذخیره</button>
+                  </div>
                 </div>
 
-                <div className={styles.addressItem}>
-                  <Field name="address_line_one" placeholder={'آدرس'}/>
-                  <ErrorMessage name="address_line_one" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field name="postal_code" placeholder={'کدپستی'}/>
-                  <ErrorMessage name="postal_code" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field name="receiver" placeholder={'گیرنده'}/>
-                  <ErrorMessage name="receiver" component="div" className={styles.error}/>
-                </div>
-                <div className={styles.addressItem}>
-                  <Field name="phone" placeholder={'شماره مبایل'}/>
-                  <ErrorMessage name="phone" component="div" className={styles.error}/>
-                </div>
 
-                <div className={styles.addressItem}>
-                  <button type={'submit'} disabled={isSubmitting}>ذخیره</button>
-                </div>
+              </Form>
+            )
+            }
+          </Formik>
+        </div>
+        <div className={styles.cartPayment}>
+          <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
+          <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
+                  onClick={onFinalOrder}>نهایی سازی سفارش
+          </button>
+
+        </div>
+
+        <div className={styles.cartItemCard}>
+          {
+            addresses && addresses.map((address, index) =>
+              <div key={index}>
+                <input type={"radio"} id={`address${index}`}
+                       name="address" value={address.address_id}
+                       checked={selectedAddress.address_id == address.address_id}
+                       onChange={(e) => onChangeValues('address', address)}/>
+                <label htmlFor={`address${index}`}>
+                  <h3>{address.title}, {address.country.name}, {address.province.name}, {address.city.name}, {address.address_line_one}, {address.postal_code}, {address.phone}, {address.receiver}</h3>
+                  <button onClick={() => onDeleteAddress(address.address_id)}>delete</button>
+                  {/*<button>edit</button>*/}
+                </label>
               </div>
-
-
-            </Form>
-          )
+            )
           }
-        </Formik>
-      </div>
-      <div className={styles.cartPayment}>
-        <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
-        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}>نهایی سازی سفارش</button>
+
+        </div>
+
 
       </div>
-
-      <div className={styles.cartItemCard}>
-        {
-          addresses && addresses.map((address, index) =>
-            <div key={index}>
-              <input type={"radio"} id={`address${index}`}
-                     name="address" value={address.address_id}
-                     checked={selectedAddress.address_id == address.address_id}
-                     onChange={(e) => onChangeValues('address', address)}/>
-              <label htmlFor={`address${index}`}>
-                <h3>{address.title}, {address.address_line_one}, {address.postal_code}, {address.postal_code}, {address.phone}, {address.receiver}</h3>
-                <button>delete</button>
-                <button>edit</button>
-              </label>
-            </div>
-          )
-        }
+      <div>
 
       </div>
-
-
     </div>
-    <div>
-
-    </div>
-  </div>
 }
 
 const mapStateToProps = state => ({

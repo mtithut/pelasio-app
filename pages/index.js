@@ -2,7 +2,7 @@ import React from 'react';
 import Link from "next/link";
 import styles from '../styles/Home.module.css'
 import Header from "../components/header";
-import {getTokenAccess} from "../components/LocalStorage";
+import {getTokenAccess} from "../components/localStorage";
 
 
 function MyApp(props) {

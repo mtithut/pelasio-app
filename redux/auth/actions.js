@@ -1,6 +1,6 @@
 import ActionType from './actionType'
 import Api from '../../api'
-import {setCartId, setTokenAccess, setUser} from "../../components/LocalStorage";
+import {setCartId, setTokenAccess, setUser} from "../../components/localStorage";
 
 export const resetLogin = () => (dispatch) => {
   dispatch({type: ActionType.LOGIN_INITIAL})
