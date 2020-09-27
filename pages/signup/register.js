@@ -21,6 +21,7 @@ import Api from '../../api'
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import CustomHead from "../../components/head";
+import {getErrorMessage} from "../../components/utility/respMessageHandler";
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string()
@@ -72,22 +73,22 @@ function Register(props) {
     router.push('/signup')
   }
 
-  const getErrorMessage = () => {
-    let alertMessage = <span>خطا ثبت اطلاعات</span>
-    if (registerData && registerData.errors && registerData.errors.error && registerData.errors.error.code) {
-      if (registerData.errors.message) {
-        alertMessage = <span>{registerData.errors.message}</span>
-      } else if (registerData.errors.error && registerData.errors.error.data &&
-        registerData.errors.error.data) {
-        let messages = []
-        Object.values(registerData.errors.error.data).map(msgs => {
-          messages = messages.concat(msgs)
-        })
-        alertMessage = messages.map(msg => <div><span>{msg}</span></div>)
-      }
-    }
-    return alertMessage
-  }
+  // const getErrorMessage = () => {
+  //   let alertMessage = <span>خطا ثبت اطلاعات</span>
+  //   if (registerData && registerData.errors && registerData.errors.error && registerData.errors.error.code) {
+  //     if (registerData.errors.message) {
+  //       alertMessage = <span>{registerData.errors.message}</span>
+  //     } else if (registerData.errors.error && registerData.errors.error.data &&
+  //       registerData.errors.error.data) {
+  //       let messages = []
+  //       Object.values(registerData.errors.error.data).map(msgs => {
+  //         messages = messages.concat(msgs)
+  //       })
+  //       alertMessage = messages.map(msg => <div><span>{msg}</span></div>)
+  //     }
+  //   }
+  //   return alertMessage
+  // }
 
 
   return <>
@@ -99,7 +100,7 @@ function Register(props) {
       </div>
       <div className={styles.error} hidden={!registerFailed}>
         {
-          getErrorMessage()
+          getErrorMessage(registerData.errors)
         }
       </div>
       <Formik

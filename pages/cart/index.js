@@ -9,6 +9,7 @@ import {useRouter} from "next/router";
 import {selectGustTokenInfo} from "../../redux/auth/reducer";
 import {getGustToken} from "../../redux/auth/actions";
 import Header from "../../components/header";
+import withMainLayout from "../../components/mainLayout";
 
 function Cart(props) {
   const {
@@ -53,35 +54,32 @@ function Cart(props) {
       cartDelete(cartInfo.unique_id, itemId)
     }
   }
-  return <div className={styles.container}>
-    <Header/>
-    <h2>سبد خرید</h2>
-    <div className={styles.grid}>
-      <div className={styles.cartItemCard}>
-        {
-          cartInfo && cartInfo.items ? cartInfo.items.map(item =>
-            <CartItem name={item.product && item.product.name}
-                      image={item.product && item.product.default_photo && item.product.default_photo.photo_file && item.product.default_photo.photo_file.xsmall}
-                      price={item.price}
-                      currencySymbol={cartInfo.currency && cartInfo.currency.symbol}
-                      quantity={item.quantity}
-                      onClick={() => onClickItem(item.catalog_unique_id)}
-                      onIncrease={() => increaseItem(item.quantity, item.variation && item.variation.maximum_quantity, item.variation && item.variation.unique_id)}
-                      onDecrease={() => decreaseItem(item.quantity, item.variation && item.variation.minimum_quantity, item.variation && item.variation.unique_id)}
-                      onDelete={() => deleteItem(item.variation.unique_id)}/>
-          ) : <h2>سبد خرید خالی است</h2>
-        }
-      </div>
-      <div className={styles.cartPayment}>
-        <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
-        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
-                onClick={()=>router.push('/cart/address')}
-        > ادامه فرایدند پرداخت</button>
-
-      </div>
-
+  return <div className={styles.grid}>
+    <div className={styles.cartItemCard}>
+      {
+        cartInfo && cartInfo.items ? cartInfo.items.map(item =>
+          <CartItem name={item.product && item.product.name}
+                    image={item.product && item.product.default_photo && item.product.default_photo.photo_file && item.product.default_photo.photo_file.xsmall}
+                    price={item.price}
+                    currencySymbol={cartInfo.currency && cartInfo.currency.symbol}
+                    quantity={item.quantity}
+                    onClick={() => onClickItem(item.catalog_unique_id)}
+                    onIncrease={() => increaseItem(item.quantity, item.variation && item.variation.maximum_quantity, item.variation && item.variation.unique_id)}
+                    onDecrease={() => decreaseItem(item.quantity, item.variation && item.variation.minimum_quantity, item.variation && item.variation.unique_id)}
+                    onDelete={() => deleteItem(item.variation.unique_id)}/>
+        ) : <h2>سبد خرید خالی است</h2>
+      }
+    </div>
+    <div className={styles.cartPayment}>
+      <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
+      <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
+              onClick={() => router.push('/cart/address')}
+      > ادامه فرایدند پرداخت
+      </button>
 
     </div>
+
+
   </div>
 
 }
@@ -99,4 +97,4 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   cartRefresh,
   getGustToken
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(Cart);
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Cart, 'سبد خرید شما'));

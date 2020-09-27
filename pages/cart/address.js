@@ -14,6 +14,7 @@ import * as Yup from "yup";
 import {getCartId, getTokenAccess, getUser} from "../../components/localStorage";
 import ConfirmationProfile from '../../components/confirmationProfile'
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
+import withMainLayout from "../../components/mainLayout";
 
 const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
   address_line_one: Yup.string()
@@ -155,10 +156,7 @@ function Address(props) {
     return <ConfirmationProfile onCancel={() => setConfirmationProfileView(false)}
                                 onSuccess={() => onFinalOrder()}/>
   else
-    return <div>
-      <Header/>
-      <h2>افزودن آدرس</h2>
-
+    return <>
       <div className={styles.success} hidden={!isSuccess}>
         <span>{message}</span>
       </div>
@@ -285,7 +283,7 @@ function Address(props) {
       <div>
 
       </div>
-    </div>
+    </>
 }
 
 const mapStateToProps = state => ({
@@ -295,6 +293,7 @@ const mapStateToProps = state => ({
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  getGustToken
+  getGustToken,
+  cartRefresh,
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(Address);
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Address, 'تنظیمات آدرس'));

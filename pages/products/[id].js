@@ -8,6 +8,7 @@ import {addToCart} from "../../redux/cart/actions";
 import Header from "../../components/header";
 import {isLoginSuccess} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
+import withMainLayout from "../../components/mainLayout";
 
 function Product(props) {
   const {productRes, addToCart, isLogin} = props
@@ -70,9 +71,7 @@ function Product(props) {
   }
 
 
-  return <div className={styles.container}>
-    <Header/>
-
+  return <>
     <main className={styles.main}>
       <div className={styles.grid}>
         <div className={styles.catalog}>
@@ -116,7 +115,7 @@ function Product(props) {
 
 
     </main>
-  </div>
+  </>
 }
 
 export async function getServerSideProps(context) {
@@ -138,4 +137,4 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   addToCart
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(Product);
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Product, 'مشخصات محصول'));

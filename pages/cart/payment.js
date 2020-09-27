@@ -8,7 +8,9 @@ import Api from "../../api";
 import {getCartId, getTokenAccess} from "../../components/localStorage";
 import {cartRefresh} from "../../redux/cart/actions";
 import {useRouter} from "next/router";
-import BankPaymentGateway from "../../components/BankPaymentGateway";
+import BankPaymentGateway from "../../components/bankPaymentGateway";
+import {getErrorMessage} from "../../components/utility/respMessageHandler";
+import withMainLayout from "../../components/mainLayout";
 
 
 function Payment(props) {
@@ -38,15 +40,14 @@ function Payment(props) {
     Api.requestOrders('ir', selectedBank.bank_id, cartInfo.unique_id, 0, 'payment', 1)
       .then(res => {
         res && res.data && setBankingInfo(res.data)
-        console.log('requestOrders', res)
+
       })
       .catch(reason => {
         console.log('error requestOrders', reason)
+        setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
       })
   }
-  return <div>
-    <Header/>
-    <h2>پرداخت</h2>
+  return <>
 
     <div className={styles.success} hidden={!isSuccess}>
       <span>{message}</span>
@@ -93,7 +94,7 @@ function Payment(props) {
     </div>
     {bankingInfo && <BankPaymentGateway formParameters={bankingInfo && bankingInfo.form_parameters}
                                         formInputs={bankingInfo && bankingInfo.form_inputs}/>}
-  </div>
+  </>
 }
 
 const mapStateToProps = state => ({
@@ -103,4 +104,4 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Payment);
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Payment,'پرداخت'));

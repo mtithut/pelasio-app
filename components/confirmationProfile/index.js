@@ -68,9 +68,8 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
           setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
         })
   }
-  return <div className={styles.container}>
-    <Header/>
-    <h1>ثبت کد ملی</h1>
+  return <>
+    <h3>اعتبارسنجی اطلاعات شخصی</h3>
     <div className={styles.success} hidden={!isSuccess}>
       <span>{message}</span>
     </div>
@@ -138,5 +137,5 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
         )}
       </Formik>
     }
-  </div>
+  </>
 }
