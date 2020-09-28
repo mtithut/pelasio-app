@@ -75,14 +75,22 @@
 
 .error {
   color: red;
-  font-size: smaller;
+  font-size: medium;
+  padding: 2px;
+  margin-bottom: 4px;
+}
+
+.warning {
+  color: yellow;
+  background-color: gray;
+  font-size: medium;
   padding: 2px;
   margin-bottom: 4px;
 }
 
 .success {
   color: green;
-  font-size: smaller;
+  font-size: medium;
   padding: 2px;
   margin-bottom: 4px;
 }
@@ -112,6 +120,7 @@
   width: 100%;
   margin-top: 1rem;
 }
+
 .side-grid {
   display: flex;
   align-items: end;
@@ -164,8 +173,9 @@
 .card span {
   white-space: nowrap;
 }
+
 .cart input,
-.card select{
+.card select {
   padding: 10px;
 }
 
@@ -266,6 +276,11 @@
   border: 1px solid #eaeaea;
   border-radius: 10px;
   transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.cartItemCard div {
+  /*border: 1px solid #eaeaea;*/
+  margin: 8px;
 }
 
 .cartItemCard img {

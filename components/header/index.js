@@ -3,44 +3,62 @@ import {selectCartInfo} from "../../redux/cart/reducer";
 import React, {useEffect, useState} from "react";
 import styles from '../../styles/Home.module.css'
 import Link from "next/link";
-import {isLoginSuccess, selectGustTokenInfo, selectLogin, selectUserinfo} from "../../redux/auth/reducer";
+import {
+  isLoginSuccess,
+  isRefreshTokenSuccess,
+  selectGustTokenInfo,
+  selectLogin,
+  selectUserinfo
+} from "../../redux/auth/reducer";
 import CustomHead from "../head";
 import {useRouter} from "next/router";
-import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../localStorage";
+import {clearUserInfo, getCartId, getExpiresTime, getTokenAccess, getUser} from "../localStorage";
 import {bindActionCreators} from "redux";
-import {cartRefresh} from "../../redux/cart/actions";
+import {cartRefresh, cleanCartState} from "../../redux/cart/actions";
 import {getGustToken, resetLogin} from "../../redux/auth/actions";
 
 function Header(props) {
-  const {resetLogin, cartRefresh, cartInfo, isLogin, userInfo, getGustToken, gustTokenInfo} = props
-  const [user, setUser] = useState(undefined)
+  const {resetLogin, cartRefresh, cleanCartState, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, isRefreshToken} = props
+  const [user, setUserInfo] = useState(undefined)
+  const [cartInfo, setCartInfo] = useState(cartData)
   const router = useRouter()
 
   useEffect(() => {
-    setTimeout(() => {
-      setUser(userInfo || JSON.parse(getUser()))
-    }, 0)
-    setUser(userInfo || JSON.parse(getUser()))
+    const date = new Date()
+    if (getExpiresTime() < date) onLogout()
+    setUserInfo(userInfo || JSON.parse(getUser()))
     const token = getTokenAccess()
-    if (token) {
-      if (token && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
+    if (token && getCartId()) {
+      if (!cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
     } else
       getGustToken()
   }, [])
 
   useEffect(() => {
-    // setTimeout(() => {
+    setUserInfo(JSON.parse(getUser()))
+  }, [isRefreshToken])
 
-    // }, 0)
-    if (gustTokenInfo && getCartId() && !cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
-  }, [gustTokenInfo])
+  useEffect(() => {
+    setCartInfo(cartData)
+  }, [cartData])
+
+  useEffect(() => {
+    if ((gustTokenInfo || isRefreshToken) && getTokenAccess() && getCartId()) {
+      cartRefresh(getCartId(), 'ir', 'fa')
+      setUserInfo(JSON.parse(getUser()))
+    }
+  }, [gustTokenInfo, isRefreshToken])
+
 
   const getCartItemCount = () => {
     return cartInfo && cartInfo.items && cartInfo.items.length
   }
   const onLogout = () => {
     resetLogin()
+    setCartInfo(undefined)
+    setUserInfo(undefined)
     clearUserInfo()
+    cleanCartState()
     getGustToken()
     router.push('/')
   }
@@ -67,8 +85,6 @@ function Header(props) {
       </div>
 
 
-
-
       <div>
         {<Link href={'/'}> خانه</Link>}
       </div>
@@ -79,16 +95,18 @@ function Header(props) {
 }
 
 const mapStateToProps = state => ({
-  cartInfo: selectCartInfo(state),
+  cartData: selectCartInfo(state),
   isLogin: isLoginSuccess(state),
   userInfo: selectUserinfo(state),
-  gustTokenInfo: selectGustTokenInfo(state)
+  gustTokenInfo: selectGustTokenInfo(state),
+  isRefreshToken: isRefreshTokenSuccess(state)
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   cartRefresh,
+  cleanCartState,
   resetLogin,
-  getGustToken
+  getGustToken,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

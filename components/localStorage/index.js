@@ -13,4 +13,9 @@ export const removeAccess = () => (localStorage.removeItem('tokenAccess'))
 export const setCartId = (cartId) => (localStorage.setItem('cartId', cartId))
 export const getCartId = () => (localStorage.getItem('cartId'))
 export const removeCartId = () => (localStorage.removeItem('cartId'))
-export const clearUserInfo = () => (localStorage.clear('cartId'))
+
+export const setExpiresTime = (expiresTime) => (localStorage.setItem('expiresTime', expiresTime))
+export const getExpiresTime = () => (localStorage.getItem('expiresTime'))
+export const removeExpiresTime = () => (localStorage.removeItem('expiresTime'))
+
+export const clearUserInfo = () => (localStorage.clear())

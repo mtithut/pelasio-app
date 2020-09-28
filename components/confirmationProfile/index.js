@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import Api from "../../api";
 import {getErrorMessage} from "../utility/respMessageHandler";
 import Header from "../header";
+import MessageHandler from "../messageHandler";
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   nationalCode: Yup.string()
@@ -13,7 +14,7 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
     .matches(/\d{10}/, 'Is not in correct format national Code')
     .required('Required'),
   phone: Yup.string()
-    .matches(/9\d{9}/, 'Is not in correct format phone, 910..')
+    .matches(/^9\d{9}$/, 'Is not in correct format phone.Without 0')
     .notRequired(),
 });
 
@@ -34,7 +35,7 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
     if (values && values.nationalCode)
       Api.sendNationalCode(values.nationalCode)
         .then(resp => {
-          // setAlertMessage({isSuccess: true, isError: false, message: resp.message || 'با موفقیت ثبت شد'})
+          setAlertMessage({isSuccess: true, isError: false, message: resp.message || 'با موفقیت ثبت شد'})
           onSavePhone(values)
         })
         .catch(reason => {
@@ -45,9 +46,14 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
   }
   const onSavePhone = (values) => {
     if (values && values.phone) {
-      Api.phoneVerification(values.nationalCode, values.phone, '+98')
+
+      Api.phoneVerification(values.nationalCode, '+98' + values.phone, '+98')
         .then(resp => {
-          setAlertMessage({isSuccess: true, isError: false, message: resp.message || 'با موفقیت ثبت شد'})
+          setAlertMessage({
+            isSuccess: true,
+            isError: false,
+            message: `${resp.message || 'با موفقیت ثبت شد'}. کد فعالسازی برای ${values.phone} ارسال شد`
+          })
           setIsValidationView(false)
           setIsVerifyView(true)
         })
@@ -61,8 +67,8 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
     if (values && values.token)
       Api.phoneVerify(values.token)
         .then(resp => {
-          setAlertMessage({isSuccess: true, isError: false, message: resp.message})
           onSuccess()
+          setAlertMessage({isSuccess: true, isError: false, message: resp.message})
         })
         .catch(reason => {
           setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
@@ -70,12 +76,7 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
   }
   return <>
     <h3>اعتبارسنجی اطلاعات شخصی</h3>
-    <div className={styles.success} hidden={!isSuccess}>
-      <span>{message}</span>
-    </div>
-    <div className={styles.error} hidden={!isError}>
-      <span>{message}</span>
-    </div>
+    <MessageHandler isError={isError} isSuccess={isSuccess} message={message}/>
     {
       isValidationInfoView &&
       <Formik
@@ -124,8 +125,8 @@ export default function ConfirmationProfile({onSuccess, onCancel}) {
         {({isSubmitting}) => (
           <Form>
             <div>
-              <Field type="text" name="code" placeholder={'کدتایید'}/>
-              <ErrorMessage name="code" component="div" className={styles.error}/>
+              <Field type="text" name="token" placeholder={'کدتایید'}/>
+              <ErrorMessage name="token" component="div" className={styles.error}/>
             </div>
             <div>
               <button type="submit" disabled={isSubmitting}>

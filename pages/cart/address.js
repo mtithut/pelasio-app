@@ -3,18 +3,26 @@ import Api from "../../api";
 import styles from "../../styles/Home.module.css";
 import Header from "../../components/header";
 import {selectCartInfo} from "../../redux/cart/reducer";
-import {selectGustTokenInfo} from "../../redux/auth/reducer";
+import {isRefreshTokenSuccess, selectGustTokenInfo, selectRefreshTokenInfo} from "../../redux/auth/reducer";
 import {bindActionCreators} from "redux";
 import {cartRefresh} from "../../redux/cart/actions";
-import {getGustToken} from "../../redux/auth/actions";
+import {getGustToken, refreshToken} from "../../redux/auth/actions";
 import {connect} from "react-redux";
 import {useRouter} from "next/router";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
-import {clearUserInfo, getCartId, getTokenAccess, getUser} from "../../components/localStorage";
+import {
+  clearUserInfo,
+  getCartId,
+  getTokenAccess,
+  getUser,
+  setCartId, setExpiresTime,
+  setTokenAccess, setUser
+} from "../../components/localStorage";
 import ConfirmationProfile from '../../components/confirmationProfile'
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
+import MessageHandler from "../../components/messageHandler";
 
 const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
   address_line_one: Yup.string()
@@ -37,7 +45,7 @@ const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
   receiver: Yup.string()
     .notRequired(),
   phone: Yup.string()
-    .matches(/09\d{9}/, 'Is not in correct format phone')
+    .matches(/^9\d{9}$/, 'Is not in correct format phone.Without 0')
     .notRequired(),
   prefix: Yup.string()
     .notRequired()
@@ -48,7 +56,9 @@ function Address(props) {
   const {
     cartInfo,
     gustTokenInfo,
-    getGustToken
+    getGustToken,
+    refreshToken,
+    isRefreshTokenSuccess
   } = props
   const [selectedAddress, setSelectedAddress] = useState({})
   const [addresses, setAddresses] = useState([])
@@ -61,7 +71,6 @@ function Address(props) {
   const router = useRouter()
 
   useEffect(() => {
-
     loadAddress()
     Api.getCountries()
       .then(res => {
@@ -119,18 +128,24 @@ function Address(props) {
   const onAddAddress = (values) => {
     console.log('city', values.city_id, cities)
     if (values && cities) {
-      console.log('city', values.city_id, cities)
       let city = cities.find(city => city.city_id == values.city_id)
       if (!city && cities.length) city = cities[0]
 
-      console.log('city', city)
-      values.latitude = city && city.latitude || 35.6864
-      values.longitude = city && city.longitude || 51.4329
+      values.latitude = (city && city.latitude) ? city.latitude : 35.6864
+      values.longitude = (city && city.longitude) ? city.longitude : 51.4329
     }
     values.prefix = '98'
+    values.phone = values.prefix + values.phone
+    if (!values.receiver) {
+      const user = JSON.parse(getUser())
+      values.receiver = `${user.firstname} ${user.lastname}`
+    }
     Api.addAddress(values.title, values.country, values.province, values.city_id, values.address_line_one,
       values.postal_code, values.latitude, values.longitude, values.phone, values.prefix, values.receiver)
-      .then(value => loadAddress())
+      .then(res => {
+        setAlertMessage({isSuccess: true, isError: false, message: res.message})
+        loadAddress()
+      })
       .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
 
   }
@@ -142,11 +157,11 @@ function Address(props) {
       })
 
   }
+
   const onFinalOrder = () => {
     const user = JSON.parse(getUser())
-    console.log(user)
-    if (user && user.national_code && user.phone) {
-      cartInfo && selectedAddress && Api.selectAddressCart(cartInfo.unique_id, selectedAddress.address_id, 'ir')
+    if (getCartId() && user && user.national_code && user.phone) {
+      selectedAddress && Api.selectAddressCart(getCartId(), selectedAddress.address_id, 'ir')
         .then(resp => router.push('/cart/payment'))
         .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
 
@@ -154,17 +169,17 @@ function Address(props) {
       setConfirmationProfileView(true)
     }
   }
+  const onSuccessConfirm = () => {
+    refreshToken()
+    setConfirmationProfileView(false)
+  }
+
   if (confirmationProfileView)
     return <ConfirmationProfile onCancel={() => setConfirmationProfileView(false)}
-                                onSuccess={() => onFinalOrder()}/>
+                                onSuccess={onSuccessConfirm}/>
   else
     return <>
-      <div className={styles.success} hidden={!isSuccess}>
-        <span>{message}</span>
-      </div>
-      <div className={styles.error} hidden={!isError}>
-        <span>{message}</span>
-      </div>
+      <MessageHandler isError={isError} isSuccess={isSuccess} message={message}/>
 
       <div className={styles.cartGrid}>
         <div className={styles.cartItemCard}>
@@ -217,6 +232,7 @@ function Address(props) {
                   </div>
                   <div className={styles.cartItem}>
                     <Field as="select" name="city_id" placeholder={'شهر'}>
+                      <option key={'city'} value={0}></option>
                       {
                         cities && cities.map(city => <option key={`cty ${city.city_id}`}
                                                              value={city.city_id}>{city.name}</option>)
@@ -290,12 +306,13 @@ function Address(props) {
 
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
-  gustTokenInfo: selectGustTokenInfo(state)
+  gustTokenInfo: selectGustTokenInfo(state),
 });
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   getGustToken,
   cartRefresh,
+  refreshToken
 }, dispatch);
-export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Address, 'تنظیمات آدرس'));
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Address, 'تکمیل فرایند خرید'));

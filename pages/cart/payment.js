@@ -11,6 +11,7 @@ import {useRouter} from "next/router";
 import BankPaymentGateway from "../../components/bankPaymentGateway";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
+import MessageHandler from "../../components/messageHandler";
 
 
 function Payment(props) {
@@ -50,12 +51,8 @@ function Payment(props) {
   }
   return <>
 
-    <div className={styles.success} hidden={!isSuccess}>
-      <span>{message}</span>
-    </div>
-    <div className={styles.error} hidden={!isError}>
-      <span>{message}</span>
-    </div>
+    <MessageHandler isError={isError} isSuccess={isSuccess} message={message}/>
+
     <div className={styles.cartGrid}>
       <div className={styles.cartItemCard}>
         <h4>تعداد محصولات {cartInfo && cartInfo.items && cartInfo.items.length}</h4>

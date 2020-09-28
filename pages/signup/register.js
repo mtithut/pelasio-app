@@ -22,6 +22,7 @@ import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import CustomHead from "../../components/head";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
+import MessageHandler from "../../components/messageHandler";
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string()
@@ -75,36 +76,28 @@ function Register(props) {
     router.push('/signup')
   }
 
-  // const getErrorMessage = () => {
-  //   let alertMessage = <span>خطا ثبت اطلاعات</span>
-  //   if (registerData && registerData.errors && registerData.errors.error && registerData.errors.error.code) {
-  //     if (registerData.errors.message) {
-  //       alertMessage = <span>{registerData.errors.message}</span>
-  //     } else if (registerData.errors.error && registerData.errors.error.data &&
-  //       registerData.errors.error.data) {
-  //       let messages = []
-  //       Object.values(registerData.errors.error.data).map(msgs => {
-  //         messages = messages.concat(msgs)
-  //       })
-  //       alertMessage = messages.map(msg => <div><span>{msg}</span></div>)
-  //     }
-  //   }
-  //   return alertMessage
-  // }
-
+  const getMessageResult = () => {
+    if (registerSuccess)
+      return (registerData.data && registerData.data.message) || 'ورود با موفقیت انجام شد'
+    if (registerFailed)
+      return registerData && getErrorMessage(registerData.errors)
+  }
 
   return <>
     <CustomHead/>
     <div className={styles.container}>
       <h1>حساب کاربری خود را ایجاد کنید</h1>
-      <div className={styles.success} hidden={!registerSuccess}>
-        <span>{(registerData.data && registerData.data.message) || 'ثبت اطلاعات با موفقیت انجام شد'}</span>
-      </div>
-      <div className={styles.error} hidden={!registerFailed}>
-        {
-          getErrorMessage(registerData.errors)
-        }
-      </div>
+      <MessageHandler isError={registerFailed}
+                      isSuccess={registerSuccess}
+                      message={getMessageResult()}/>
+      {/*<div className={styles.success} hidden={!registerSuccess}>*/}
+      {/*  <span>{(registerData.data && registerData.data.message) || 'ثبت اطلاعات با موفقیت انجام شد'}</span>*/}
+      {/*</div>*/}
+      {/*<div className={styles.error} hidden={!registerFailed}>*/}
+      {/*  {*/}
+      {/*    getErrorMessage(registerData.errors)*/}
+      {/*  }*/}
+      {/*</div>*/}
       <Formik
         initialValues={{
           firstname: '',
@@ -177,6 +170,7 @@ export async function getStaticProps() {
     },
   }
 }
+
 const mapStateToProps = (state) => {
   console.log(state)
   return Object.assign({},

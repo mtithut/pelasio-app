@@ -1,6 +1,7 @@
 import ActionType from './actionType'
 import Api from '../../api'
 import {getTokenAccess} from "../../components/localStorage";
+import {INIT_STATE} from "../master/baseReducer";
 
 export const addToCart = (itemId, quality) => (dispatch) => {
   dispatch({type: ActionType.CART_PENDING})
@@ -47,6 +48,9 @@ export const cartDelete = (cartId, itemId) => (dispatch) => {
     )
 };
 
+export const cleanCartState = () => (dispatch) => {
+  dispatch({type: INIT_STATE})
+}
 export const cartRefresh = (cartId, country, lang) => (dispatch) => {
   dispatch({type: ActionType.CART_PENDING})
   Api.cartsRefresh(cartId, country, lang)

@@ -7,6 +7,8 @@ export const baseUrl = 'http://api.pelazio.test';
 export const urls = {
   login: '/v1/customers/users/auth/login',
   register: '/v1/customers/users/auth/register',
+  userShow: '/v1/customers/profile',
+  refreshToken: '/v1/customers/users/refresh',
   countries: '/v1/baseinfo/countries',
   provinces: '/v1/baseinfo/provinces',
   categories: '/v1/baseinfo/categories',
@@ -48,7 +50,8 @@ const patch = function (url, body = '', headers = {}) {
     });
 };
 
-const get = function (url, params = {}, headers = {'accept-language': 'fa'}) {
+const get = function (url, params = {}, headers = {}) {
+  headers = Object.assign(headers, {'accept-language': 'fa'})
   return axios.get(baseUrl + url, {params: params, headers: headers /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
@@ -89,6 +92,15 @@ export default {
 
     return post(urls.register, data)
   },
+  refreshProfile: function (params) {
+
+  },
+  refreshToken: () => {
+    const token = getTokenAccess()
+    const headers = token ? {Authorization: `Bearer ${token}`} : {}
+    return post(urls.refreshToken, {}, headers)
+  },
+
   getCategory: (lang = 'fa') => get(urls.categories, {lang: lang}),
   getCategoryTree: (lang = 'fa') => get(urls.categoriesTree, {lang: lang}),
   getProductSearch: (filters = {}) => get(urls.productSearch, filters),

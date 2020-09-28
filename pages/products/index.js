@@ -37,11 +37,9 @@ function Products(props) {
     setFilters(newFilters)
     console.log(newFilters)
     Object.entries(newFilters).forEach(([key, value]) => {
-        console.log('keyValue',key, typeof value)
         value==false && delete newFilters[key]
       }
     )
-
     loadProducts(newFilters)
   }
   const loadProducts = (filters) => {

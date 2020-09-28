@@ -9,12 +9,14 @@ import Header from "../../components/header";
 import {isLoginSuccess} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
+import {getUser} from "../../components/localStorage";
 
 function Product(props) {
   const {productRes, addToCart, isLogin} = props
   const router = useRouter()
   const [selectedVariation, setVariation] = useState(undefined)
   const [quantity, setQuantity] = useState(0)
+  const [userInfo, setUserInfo] = useState(undefined)
   const [info, setInfo] = useState({
     name: '',
     photo: '',
@@ -22,6 +24,10 @@ function Product(props) {
     variations: [],
   })
   // console.log('product', productRes)
+
+  useEffect(() => {
+    setUserInfo(JSON.parse(getUser()))
+  }, [])
 
   useEffect(() => {
     initProductInfo()
@@ -50,7 +56,7 @@ function Product(props) {
   }
 
   const onClickBuy = () => {
-    if (!isLogin) {
+    if (!userInfo) {
       router.push('/signup')
     } else if (selectedVariation && quantity)
       addToCart(selectedVariation.unique_id, quantity)
@@ -106,10 +112,10 @@ function Product(props) {
           <button onClick={() => onChangeValues('Quality', quantity - 1)}>-</button>
         </div>
         <div className={styles.catalog}>
-          <button disabled={!selectedVariation || !quantity || !selectedVariation.stock || !isLogin}
+          <button disabled={!selectedVariation || !quantity || !selectedVariation.stock || !userInfo}
                   onClick={onClickBuy}>{selectedVariation && selectedVariation.stock ? 'خرید کنید' : 'ناموجود'}
           </button>
-          {!isLogin && <button onClick={() => router.push('/signup')}>ورود</button>}
+          {!userInfo && <button onClick={() => router.push('/signup')}>ورود</button>}
         </div>
       </div>
 

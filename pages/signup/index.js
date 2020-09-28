@@ -15,6 +15,7 @@ import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from 'yup';
 import CustomHead from "../../components/head";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
+import MessageHandler from "../../components/messageHandler";
 
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -50,32 +51,26 @@ function Login(props) {
     }
 
   }
-  // const getErrorMessage = () => {
-  //   let alertMessage = <span>خطا در ورود</span>
-  //   if (LoginData && LoginData.errors && LoginData.errors.error && LoginData.errors.error.code) {
-  //     if (LoginData.errors.message) {
-  //       alertMessage = <span>{LoginData.errors.message}</span>
-  //     } else if (LoginData.errors.error && LoginData.errors.error.data) {
-  //       let messages = []
-  //       Object.values(LoginData.errors.error.data).map(msgs => {
-  //         messages = messages.concat(msgs)
-  //       })
-  //       alertMessage = messages.map(msg => <div><span>{msg}</span></div>)
-  //     }
-  //   }
-  //   return alertMessage
-  // }
+  const getMessageResult = () => {
+    if (loginSuccess)
+      return (LoginData.data && LoginData.data.message) || 'ورود با موفقیت انجام شد'
+    if (loginFailed)
+      return LoginData && getErrorMessage(LoginData.errors)
+  }
 
   return <>
     <CustomHead/>
     <div className={styles.container}>
       <h1>ورود به حساب کاربری</h1>
-      <div className={styles.success} hidden={!loginSuccess}>
-        <span>{(LoginData.data && LoginData.data.message) || 'ورود با موفقیت انجام شد'}</span>
-      </div>
-      <div className={styles.error} hidden={!loginFailed}>
-        <span>{LoginData && getErrorMessage(LoginData.errors)}</span>
-      </div>
+      <MessageHandler isError={loginFailed}
+                      isSuccess={loginSuccess}
+                      message={getMessageResult()}/>
+      {/*<div className={styles.success} hidden={!loginSuccess}>*/}
+      {/*  <span>{(LoginData.data && LoginData.data.message) || 'ورود با موفقیت انجام شد'}</span>*/}
+      {/*</div>*/}
+      {/*<div className={styles.error} hidden={!loginFailed}>*/}
+      {/*  <span>{LoginData && getErrorMessage(LoginData.errors)}</span>*/}
+      {/*</div>*/}
       <Formik
         initialValues={{email: '', password: ''}}
         validationSchema={DisplayingErrorMessagesSchema}
