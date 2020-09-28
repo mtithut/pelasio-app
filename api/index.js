@@ -10,9 +10,10 @@ export const urls = {
   countries: '/v1/baseinfo/countries',
   provinces: '/v1/baseinfo/provinces',
   categories: '/v1/baseinfo/categories',
+  categoriesTree: '/v1/baseinfo/categories/tree',
   banks: '/v1/baseinfo/banks',
   addresses: '/v1/customers/addresses',
-  productSearch: '/v1/customers/products/search/',
+  productSearch: '/v1/customers/products/search',
   productFilter: '/v1/customers/products/filter/',
   catalogs: '/v1/customers/catalogs/',
   carts: '/v1/customers/carts',
@@ -47,7 +48,7 @@ const patch = function (url, body = '', headers = {}) {
     });
 };
 
-const get = function (url, params = {}, headers = {}) {
+const get = function (url, params = {}, headers = {'accept-language': 'fa'}) {
   return axios.get(baseUrl + url, {params: params, headers: headers /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
@@ -88,7 +89,8 @@ export default {
 
     return post(urls.register, data)
   },
-  getCategory: () => get(urls.categories),
+  getCategory: (lang = 'fa') => get(urls.categories, {lang: lang}),
+  getCategoryTree: (lang = 'fa') => get(urls.categoriesTree, {lang: lang}),
   getProductSearch: (filters = {}) => get(urls.productSearch, filters),
   getProductFilter: function (category, limit, sort, inStock, lang) {
     const params = {category: category, limit: limit, sort: sort, 'in-stock': inStock, lang: lang}

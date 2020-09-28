@@ -104,12 +104,22 @@
 
 .grid {
   display: flex;
-  align-items: center;
+  /*align-items: center;*/
   justify-content: center;
   flex-wrap: wrap;
 
   /*max-width: 800px;*/
-  max-width: 80%;
+  width: 100%;
+  margin-top: 1rem;
+}
+.side-grid {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  /*max-width: 800px;*/
+  width: 2%;
   margin-top: 1rem;
 }
 
@@ -153,6 +163,10 @@
 
 .card span {
   white-space: nowrap;
+}
+.cart input,
+.card select{
+  padding: 10px;
 }
 
 .logo {
@@ -294,6 +308,6 @@
   margin: 4px;
 }
 
-.cartItemCard img {
-  width: 64px;
-}
+/*.cartItemCard img {*/
+/*  width: 64px;*/
+/*}*/

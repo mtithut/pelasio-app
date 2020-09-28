@@ -4,81 +4,84 @@ import styles from '../../styles/Home.module.css'
 import ProductCard from "../../components/product/card";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
+import ProductFilters from "../../components/productFilters";
+import {getCategories, getCategoryList, setCategoryList} from "../../components/localStorage";
 
 function Products(props) {
-  const {products} = props
-  const {data, error, message, status} = products
+  const {productList} = props
+  const [products, setProducts] = useState(productList || [])
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
     category: undefined,
     discount: true,
-    'in-stock': true,
-    'fast-delivery': true,
-    original: true,
+    'in-stock': false,
+    'fast-delivery': false,
+    original: false,
     sort: 'price,asc',//price,desc  ,date,asc,date,desc
 
   })
   useEffect(() => {
-    Api.getCategory().then(res => {
-      if (res && res.data && Array.isArray(res.data)) {
-        setCategories(res.data)
-      }
-    })
+    if (getCategoryList()) {
+      setCategories(JSON.parse(getCategoryList()))
+    } else
+      Api.getCategory('fa').then(res => {
+        if (res && res.data && Array.isArray(res.data)) {
+          setCategories(res.data)
+          setCategoryList(JSON.stringify(res.data))
+        }
+      })
   }, [])
-  const addFilter = (type, value) => {
-    let filter = {}
-    filter[type] = value
+  const addFilter = (filter) => {
     const newFilters = Object.assign(filters, filter);
     setFilters(newFilters)
+    console.log(newFilters)
+    Object.entries(newFilters).forEach(([key, value]) => {
+        console.log('keyValue',key, typeof value)
+        value==false && delete newFilters[key]
+      }
+    )
+
+    loadProducts(newFilters)
+  }
+  const loadProducts = (filters) => {
+    Api.getProductSearch(filters)
+      .then(res => {
+        res && res.data && res.data.result && setProducts(res.data.result)
+      })
   }
 
   const onClickItem = id => {
     router.push('/products/' + id)
   }
   return <>
-    <main className={styles.main}>
-      <div className={styles.grid}>
-        <div className={styles.card}>
-          <input type="checkbox" id="discount" name="discount" value={filters.discount}/>
-          <label htmlFor="discount">تخفیف</label>
-        </div>
-        <div className={styles.card}>
-          <input type="checkbox" id="original" name="original" value={filters.original}/>
-          <label htmlFor="original">اصل</label>
-        </div>
-        <div className={styles.card}>
-          <input type="checkbox" id="fast-delivery" name="fast-delivery" value={filters['fast-delivery']}/>
-          <label htmlFor="in-stock">تحویل فوری</label>
-        </div>
-        <div className={styles.card}>
-          <input type="checkbox" id="in-stock" name="in-stock" value={filters['in-stock']}/>
-          <label htmlFor="in-stock">موجود</label>
-        </div>
+    <div className={styles.grid}>
+      <div className={styles.cartItemCard}>
+        <div className={styles.grid}>
+          {
+            products && Array.isArray(products) &&
+            products.map(product => <ProductCard key={`pro-${product.unique_id}`} name={product.name}
+                                                 logo={product.default_photo}
+                                                 pricing={product.pricing}
+                                                 onClick={event => onClickItem(product.catalog_unique_id)}/>)
 
-        {/*</div>*/}
+          }
+        </div>
+      </div>
+      <div className={styles.cartPayment}>
+        <ProductFilters categories={categories} filters={filters} onChange={addFilter}/>
 
       </div>
-      <div className={styles.grid}>
-        {
-          data && data.result && Array.isArray(data.result) &&
-          data.result.map(product => <ProductCard key={`pro-${product.unique_id}`} name={product.name}
-                                                  logo={product.default_photo}
-                                                  pricing={product.pricing}
-                                                  onClick={event => onClickItem(product.catalog_unique_id)}/>)
-
-        }
-      </div>
-    </main>
+    </div>
   </>
 
 }
 
 export async function getServerSideProps() {
-  let products = await Api.getProductFilter(68, 10, 'random', true, 'fa')
+  let res = await Api.getProductSearch()
   return {
     props: {
-      products: products
+      productList: res && res.data && res.data.result
     }
   }
 

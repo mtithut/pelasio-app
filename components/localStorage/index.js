@@ -2,6 +2,10 @@ export const setUser = (user) => (localStorage.setItem('user', user))
 export const getUser = () => (localStorage.getItem('user'))
 export const removeUser = () => (localStorage.removeItem('user'))
 
+export const setCategoryList = (Categories) => (localStorage.setItem('Categories', Categories))
+export const getCategoryList = () => (localStorage.getItem('Categories'))
+export const removeCategoryList = () => (localStorage.removeItem('Categories'))
+
 export const setTokenAccess = (token) => (localStorage.setItem('tokenAccess', token))
 export const getTokenAccess = () => (localStorage.getItem('tokenAccess'))
 export const removeAccess = () => (localStorage.removeItem('tokenAccess'))
