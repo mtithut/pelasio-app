@@ -20,9 +20,9 @@ import {doRefreshToken, isExpireToken} from "../utility/validation";
 import Routes from '../../components/routes'
 
 function Header(props) {
-  const {cleanLoginState, cartRefresh, cleanCartState, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
+  const {cleanLoginState, cartRefresh, cleanCartState, cartInfo,cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
   const [user, setUserInfo] = useState(undefined)
-  const [cartInfo, setCartInfo] = useState(cartData)
+  // const [cartInfo, setCartInfo] = useState(cartData)
   const router = useRouter()
 
   useEffect(() => {
@@ -42,9 +42,9 @@ function Header(props) {
       !getTokenAccess() && getGustToken()
   }, [])
 
-  useEffect(() => {
-    setCartInfo(cartData)
-  }, [cartData])
+  // useEffect(() => {
+  //   setCartInfo(cartData)
+  // }, [cartData])
 
   useEffect(() => {
     if (gustTokenInfo || isRefreshToken) {
@@ -54,7 +54,7 @@ function Header(props) {
   }, [gustTokenInfo, isRefreshToken])
 
   const onLogout = () => {
-    setCartInfo(undefined)
+    // setCartInfo(undefined)
     setUserInfo(undefined)
     clearUserInfo()
     cleanLoginState()
@@ -106,7 +106,7 @@ function Header(props) {
 }
 
 const mapStateToProps = state => ({
-  cartData: selectCartInfo(state),
+  cartInfo: selectCartInfo(state),
   isLogin: isLoginSuccess(state),
   userInfo: selectUserinfo(state),
   gustTokenInfo: selectGustTokenInfo(state),

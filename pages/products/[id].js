@@ -9,11 +9,12 @@ import Header from "../../components/header";
 import {isLoginSuccess, loginState} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
-import {getUser} from "../../components/localStorage";
+import {getCartId, getUser} from "../../components/localStorage";
 import Routes from '../../components/routes'
+import {refreshToken} from "../../redux/auth/actions";
 
 function Product(props) {
-  const {productRes, addToCart, isLogin} = props
+  const {productRes, addToCart, isLogin, cartInfo, refreshToken} = props
   const router = useRouter()
   const [selectedVariation, setVariation] = useState(undefined)
   const [quantity, setQuantity] = useState(0)
@@ -37,6 +38,9 @@ function Product(props) {
   useEffect(() => {
     initProductInfo()
   }, [productRes])
+  useEffect(() => {
+    !getCartId() && refreshToken()
+  }, [cartInfo])
 
   const initProductInfo = () => {
     let photo = '', name = '', description = '', variations = []
@@ -146,6 +150,6 @@ const mapStateToProps = state => ({
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  addToCart
+  addToCart, refreshToken
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Product, 'مشخصات محصول'));
