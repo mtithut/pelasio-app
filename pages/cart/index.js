@@ -36,7 +36,7 @@ function Cart(props) {
     if (!cartInfo)
       if (getTokenAccess() && getCartId())
         cartRefresh(getCartId(), 'ir', 'fa')
-      else {
+      else if (!getTokenAccess()) {
         clearUserInfo()
         getGustToken()
       }

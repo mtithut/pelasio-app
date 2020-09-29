@@ -19,6 +19,7 @@ export const selectUserinfo = (state) => {
   const res = selectLogin(state)
   return res && res.data && res.data.data && res.data.data.user
 }
+export const loginState = (state) => selectLogin(state).status
 export const isLoginSuccess = (state) => selectLogin(state).status === API_CALL_STATUS.SUCCESS
 export const isLoginFailed = (state) => selectLogin(state).status === API_CALL_STATUS.FAILED
 

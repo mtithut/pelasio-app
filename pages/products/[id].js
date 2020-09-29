@@ -6,7 +6,7 @@ import {selectCartInfo} from "../../redux/cart/reducer";
 import {bindActionCreators} from "redux";
 import {addToCart} from "../../redux/cart/actions";
 import Header from "../../components/header";
-import {isLoginSuccess} from "../../redux/auth/reducer";
+import {isLoginSuccess, loginState} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
 import {getUser} from "../../components/localStorage";
@@ -29,6 +29,10 @@ function Product(props) {
   useEffect(() => {
     setUserInfo(JSON.parse(getUser()))
   }, [])
+
+  useEffect(() => {
+    setUserInfo(JSON.parse(getUser()))
+  }, [isLogin])
 
   useEffect(() => {
     initProductInfo()

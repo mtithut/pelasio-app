@@ -2,14 +2,13 @@ import React from "react";
 
 export default function BankPaymentGateway({formParameters, formInputs}) {
   let submitElement = React.createRef();
-  const onSubmit = () => {
-    setTimeout(() => {
-      submitElement && submitElement.current && submitElement.current.click()
-    }, 500);
-  }
+  setTimeout(() => {
+    submitElement && submitElement.current && submitElement.current.click()
+    console.log('BankPaymentGateway')
+  }, 500);
+
 
   return formParameters && formInputs && <form
-    onLoad={onSubmit}
     action={formParameters && formParameters.action}
     method={formParameters && formParameters.method}
     target={formParameters && formParameters.target}>

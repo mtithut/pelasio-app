@@ -5,7 +5,7 @@ import styles from '../../styles/Home.module.css'
 import Link from "next/link";
 import {
   isLoginSuccess,
-  isRefreshTokenSuccess,
+  isRefreshTokenSuccess, loginState,
   selectGustTokenInfo,
   selectLogin,
   selectUserinfo
@@ -30,6 +30,7 @@ function Header(props) {
       console.log('isExpireToken')
       onLogout()
     } else if (doRefreshToken()) {
+      console.log('doRefreshToken')
       refreshToken()
     }
 
@@ -109,7 +110,7 @@ const mapStateToProps = state => ({
   isLogin: isLoginSuccess(state),
   userInfo: selectUserinfo(state),
   gustTokenInfo: selectGustTokenInfo(state),
-  isRefreshToken: isRefreshTokenSuccess(state)
+  isRefreshToken: isRefreshTokenSuccess(state),
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({

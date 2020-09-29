@@ -13,10 +13,11 @@ import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
 import MessageHandler from "../../components/messageHandler";
 import Routes from '../../components/routes'
+import {refreshToken} from "../../redux/auth/actions";
 
 
 function Payment(props) {
-  const {cartInfo} = props
+  const {cartInfo, refreshToken} = props
   const router = useRouter()
   const [banks, setBanks] = useState([])
   const [selectedBank, setSelectedBack] = useState({})
@@ -35,14 +36,20 @@ function Payment(props) {
 
     if (getTokenAccess() && getCartId() && !cartInfo) {
       cartRefresh(getCartId(), 'ir', 'fa')
-    } else if (!getTokenAccess())
-      router.push(Routes.signup)
-
+    } else {
+      !getCartId() && router.push(Routes.cart)
+      !getTokenAccess() && router.push(Routes.signup)
+    }
   }, [])
+
   const onPayment = () => {
     Api.requestOrders('ir', selectedBank.bank_id, cartInfo.unique_id, 0, 'payment', 1)
       .then(res => {
-        res && res.data && setBankingInfo(res.data)
+        if (res && res.data) {
+          setBankingInfo(res.data)
+          refreshToken()
+        }
+
       })
       .catch(reason => {
         console.log('error requestOrders', reason)
@@ -100,6 +107,8 @@ const mapStateToProps = state => ({
 });
 
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  refreshToken,
+}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Payment, 'پرداخت'));

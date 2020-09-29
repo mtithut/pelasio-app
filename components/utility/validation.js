@@ -20,7 +20,6 @@ export const isValidEmail = (value) => {
 
 export const isExpireToken = () => {
   const dateSec = parseInt((new Date()).getTime() / 1000)
-  console.log(dateSec, getExpiresTime())
   return (getExpiresTime() <= dateSec)
 }
 
