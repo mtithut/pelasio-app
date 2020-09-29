@@ -10,6 +10,7 @@ import {isLoginSuccess} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
 import {getUser} from "../../components/localStorage";
+import Routes from '../../components/routes'
 
 function Product(props) {
   const {productRes, addToCart, isLogin} = props
@@ -57,7 +58,7 @@ function Product(props) {
 
   const onClickBuy = () => {
     if (!userInfo) {
-      router.push('/signup')
+      router.push(Routes.signup)
     } else if (selectedVariation && quantity)
       addToCart(selectedVariation.unique_id, quantity)
   }
@@ -115,7 +116,7 @@ function Product(props) {
           <button disabled={!selectedVariation || !quantity || !selectedVariation.stock || !userInfo}
                   onClick={onClickBuy}>{selectedVariation && selectedVariation.stock ? 'خرید کنید' : 'ناموجود'}
           </button>
-          {!userInfo && <button onClick={() => router.push('/signup')}>ورود</button>}
+          {!userInfo && <button onClick={() => router.push(Routes.signup)}>ورود</button>}
         </div>
       </div>
 

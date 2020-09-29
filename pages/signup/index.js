@@ -16,6 +16,7 @@ import * as Yup from 'yup';
 import CustomHead from "../../components/head";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import MessageHandler from "../../components/messageHandler";
+import Routes from '../../components/routes'
 
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
@@ -33,7 +34,7 @@ function Login(props) {
 
   useEffect(() => {
     if (loginFailed) cleanLoginState()
-    else if (loginSuccess) router.push('/')
+    else if (loginSuccess) router.push(Routes.home)
   }, [])
 
   useEffect(() => {

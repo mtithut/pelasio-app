@@ -12,6 +12,7 @@ import BankPaymentGateway from "../../components/bankPaymentGateway";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
 import MessageHandler from "../../components/messageHandler";
+import Routes from '../../components/routes'
 
 
 function Payment(props) {
@@ -35,7 +36,7 @@ function Payment(props) {
     if (getTokenAccess() && getCartId() && !cartInfo) {
       cartRefresh(getCartId(), 'ir', 'fa')
     } else if (!getTokenAccess())
-      router.push('/signup')
+      router.push(Routes.signup)
 
   }, [])
   const onPayment = () => {
@@ -101,4 +102,4 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({}, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Payment,'پرداخت'));
+export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Payment, 'پرداخت'));

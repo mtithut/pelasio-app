@@ -23,6 +23,7 @@ import ConfirmationProfile from '../../components/confirmationProfile'
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import withMainLayout from "../../components/mainLayout";
 import MessageHandler from "../../components/messageHandler";
+import Routes from "../../components/routes";
 
 const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
   address_line_one: Yup.string()
@@ -70,7 +71,7 @@ function Address(props) {
   const router = useRouter()
 
   useEffect(() => {
-    if (!getUser() || !getTokenAccess()) router.push('/signup')
+    if (!getUser() || !getTokenAccess()) router.push(Routes.signup)
     else {
 
       loadAddress()
@@ -90,7 +91,7 @@ function Address(props) {
 
       if (getCartId()) {
         cartRefresh(getCartId(), 'ir', 'fa')
-      } else router.push('/cart')
+      } else router.push(Routes.cart)
     }
   }, [])
 
@@ -153,7 +154,7 @@ function Address(props) {
     const user = JSON.parse(getUser())
     if (getCartId() && user && user.national_code && user.phone) {
       selectedAddress && Api.selectAddressCart(getCartId(), selectedAddress, 'ir')
-        .then(resp => router.push('/cart/payment'))
+        .then(resp => router.push(Routes.cartPayment))
         .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
 
     } else {
@@ -298,7 +299,7 @@ function Address(props) {
 }
 
 const mapStateToProps = state => ({
-  cartData: selectCartInfo(state),
+  cartInfo: selectCartInfo(state),
   gustTokenInfo: selectGustTokenInfo(state),
   isRefreshToken: isRefreshTokenSuccess(state)
 });

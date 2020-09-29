@@ -23,6 +23,7 @@ import * as Yup from "yup";
 import CustomHead from "../../components/head";
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
 import MessageHandler from "../../components/messageHandler";
+import Routes from '../../components/routes'
 
 const DisplayingErrorMessagesSchema = Yup.object().shape({
   email: Yup.string()
@@ -58,7 +59,7 @@ function Register(props) {
   useEffect(() => {
     if (registerSuccess && userPass.user && userPass.pass) {
       login(userPass.user, userPass.pass)
-      router.push('/')
+      router.push(Routes.home)
     }
   }, [registerSuccess])
 
@@ -73,7 +74,7 @@ function Register(props) {
 
   }
   const redirectLogin = () => {
-    router.push('/signup')
+    router.push(Routes.signup)
   }
 
   const getMessageResult = () => {

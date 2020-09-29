@@ -5,7 +5,8 @@ import ProductCard from "../../components/product/card";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
 import ProductFilters from "../../components/productFilters";
-import {getCategories, getCategoryList, setCategoryList} from "../../components/localStorage";
+import {getCategoryList, setCategoryList} from "../../components/localStorage";
+import Routes from '../../components/routes'
 
 function Products(props) {
   const {productList} = props
@@ -37,7 +38,7 @@ function Products(props) {
     setFilters(newFilters)
     console.log(newFilters)
     Object.entries(newFilters).forEach(([key, value]) => {
-        value==false && delete newFilters[key]
+        value == false && delete newFilters[key]
       }
     )
     loadProducts(newFilters)
@@ -50,7 +51,7 @@ function Products(props) {
   }
 
   const onClickItem = id => {
-    router.push('/products/' + id)
+    router.push(`${Routes.products}/${id}`)
   }
   return <>
     <div className={styles.grid}>

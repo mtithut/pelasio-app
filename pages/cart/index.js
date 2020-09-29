@@ -12,6 +12,7 @@ import Header from "../../components/header";
 import withMainLayout from "../../components/mainLayout";
 import {clearUserInfo, getCartId, getTokenAccess} from "../../components/localStorage";
 import MessageHandler from "../../components/messageHandler";
+import Routes from '../../components/routes'
 
 function Cart(props) {
   const {
@@ -48,7 +49,7 @@ function Cart(props) {
   }, [gustTokenInfo])
 
   const onClickItem = (catalogId) => {
-    router.push(`/products/${catalogId}`)
+    router.push(`${Routes.products}/${catalogId}`)
   }
   const increaseItem = (item) => {
     let quantity = item.quantity,
@@ -102,7 +103,7 @@ function Cart(props) {
     <div className={styles.cartPayment}>
       <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
       <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
-              onClick={() => router.push('/cart/address')}
+              onClick={() => router.push(Routes.cartAddress)}
       > ادامه فرایدند پرداخت
       </button>
 
