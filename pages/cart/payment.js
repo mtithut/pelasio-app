@@ -42,7 +42,6 @@ function Payment(props) {
     Api.requestOrders('ir', selectedBank.bank_id, cartInfo.unique_id, 0, 'payment', 1)
       .then(res => {
         res && res.data && setBankingInfo(res.data)
-
       })
       .catch(reason => {
         console.log('error requestOrders', reason)

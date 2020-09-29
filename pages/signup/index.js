@@ -4,7 +4,7 @@ import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
 import {bindActionCreators} from "redux";
-import {login, resetLogin} from "../../redux/auth/actions";
+import {login, cleanLoginState} from "../../redux/auth/actions";
 import {
   isLoginFailed,
   isLoginSuccess,
@@ -27,12 +27,12 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 });
 
 function Login(props) {
-  const {LoginData, loginSuccess, loginFailed, login, resetLogin} = props
+  const {LoginData, loginSuccess, loginFailed, login, cleanLoginState} = props
   console.log('status', LoginData)
   const router = useRouter()
 
   useEffect(() => {
-    if (loginFailed) resetLogin()
+    if (loginFailed) cleanLoginState()
     else if (loginSuccess) router.push('/')
   }, [])
 
@@ -116,7 +116,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  login, resetLogin,
+  login, cleanLoginState,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

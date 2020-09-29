@@ -4,7 +4,7 @@ export default function BankPaymentGateway({formParameters, formInputs}) {
   let submitElement = React.createRef();
   const onSubmit = () => {
     setTimeout(() => {
-      // submitElement && submitElement.current && submitElement.current.click()
+      submitElement && submitElement.current && submitElement.current.click()
     }, 500);
   }
 

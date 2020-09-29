@@ -15,52 +15,55 @@ import {useRouter} from "next/router";
 import {clearUserInfo, getCartId, getExpiresTime, getTokenAccess, getUser} from "../localStorage";
 import {bindActionCreators} from "redux";
 import {cartRefresh, cleanCartState} from "../../redux/cart/actions";
-import {getGustToken, resetLogin} from "../../redux/auth/actions";
+import {cleanLoginState, getGustToken, refreshToken} from "../../redux/auth/actions";
+import {doRefreshToken, isExpireToken} from "../utility/validation";
 
 function Header(props) {
-  const {resetLogin, cartRefresh, cleanCartState, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, isRefreshToken} = props
+  const {cleanLoginState, cartRefresh, cleanCartState, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
   const [user, setUserInfo] = useState(undefined)
   const [cartInfo, setCartInfo] = useState(cartData)
   const router = useRouter()
 
   useEffect(() => {
-    const date = new Date()
-    if (getExpiresTime() < date) onLogout()
-    setUserInfo(userInfo || JSON.parse(getUser()))
-    const token = getTokenAccess()
-    if (token && getCartId()) {
-      if (!cartInfo) cartRefresh(getCartId(), 'ir', 'fa')
-    } else
-      getGustToken()
-  }, [])
 
-  useEffect(() => {
-    setUserInfo(JSON.parse(getUser()))
-  }, [isRefreshToken])
+    if (isExpireToken()) {
+      console.log('isExpireToken')
+      onLogout()
+    } else if (doRefreshToken()) {
+      refreshToken()
+    }
+
+    setUserInfo(userInfo || JSON.parse(getUser()))
+
+    if (getTokenAccess() && getCartId()) {
+      !cartInfo && cartRefresh(getCartId(), 'ir', 'fa')
+    } else
+      !getTokenAccess() && getGustToken()
+  }, [])
 
   useEffect(() => {
     setCartInfo(cartData)
   }, [cartData])
 
   useEffect(() => {
-    if ((gustTokenInfo || isRefreshToken) && getTokenAccess() && getCartId()) {
-      cartRefresh(getCartId(), 'ir', 'fa')
+    if (gustTokenInfo || isRefreshToken) {
+      getCartId() && cartRefresh(getCartId(), 'ir', 'fa')
       setUserInfo(JSON.parse(getUser()))
     }
   }, [gustTokenInfo, isRefreshToken])
 
-
-  const getCartItemCount = () => {
-    return cartInfo && cartInfo.items && cartInfo.items.length
-  }
   const onLogout = () => {
-    resetLogin()
     setCartInfo(undefined)
     setUserInfo(undefined)
     clearUserInfo()
+    cleanLoginState()
     cleanCartState()
     getGustToken()
     router.push('/')
+  }
+
+  const getCartItemCount = () => {
+    return cartInfo && cartInfo.items && cartInfo.items.length
   }
 
   const getUserName = () => {
@@ -86,6 +89,10 @@ function Header(props) {
 
 
       <div>
+        {<Link href={'/products'}> محصولات پلازیو </Link>}
+      </div>
+
+      <div>
         {<Link href={'/'}> خانه</Link>}
       </div>
 
@@ -105,7 +112,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   cartRefresh,
   cleanCartState,
-  resetLogin,
+  cleanLoginState,
+  refreshToken,
   getGustToken,
 }, dispatch);
 

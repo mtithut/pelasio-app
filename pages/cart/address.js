@@ -55,12 +55,11 @@ const DisplayingErrorMessagesSchemaAddress = Yup.object().shape({
 function Address(props) {
   const {
     cartInfo,
-    gustTokenInfo,
-    getGustToken,
+    cartRefresh,
     refreshToken,
-    isRefreshTokenSuccess
+    isRefreshToken
   } = props
-  const [selectedAddress, setSelectedAddress] = useState({})
+  const [selectedAddress, setSelectedAddress] = useState(undefined)
   const [addresses, setAddresses] = useState([])
   const [countries, setCountries] = useState([])
   const [provinces, setProvinces] = useState([])
@@ -71,35 +70,29 @@ function Address(props) {
   const router = useRouter()
 
   useEffect(() => {
-    loadAddress()
-    Api.getCountries()
-      .then(res => {
-        if (res && res.data && Array.isArray(res.data)) {
-          setCountries(res.data)
-        }
-      })
-    Api.getProvinces(9)
-      .then(res => {
-        if (res && res.data && Array.isArray(res.data)) {
-          setProvinces(res.data)
-          res.data.length && loadCities(res.data[0].city_id)
-        }
-      })
+    if (!getUser() || !getTokenAccess()) router.push('/signup')
+    else {
 
-    if (getTokenAccess() && getCartId()) {
-      cartRefresh(getCartId(), 'ir', 'fa')
-    } else {
-      clearUserInfo()
-      getGustToken()
+      loadAddress()
+      Api.getCountries()
+        .then(res => {
+          if (res && res.data && Array.isArray(res.data)) {
+            setCountries(res.data)
+          }
+        })
+      Api.getProvinces(9)
+        .then(res => {
+          if (res && res.data && Array.isArray(res.data)) {
+            setProvinces(res.data)
+            res.data.length && loadCities(res.data[0].city_id)
+          }
+        })
+
+      if (getCartId()) {
+        cartRefresh(getCartId(), 'ir', 'fa')
+      } else router.push('/cart')
     }
   }, [])
-
-  useEffect(() => {
-    if (getTokenAccess() && getCartId()) {
-      cartRefresh(getCartId(), 'ir', 'fa')
-      loadAddress()
-    }
-  }, [gustTokenInfo])
 
   const loadAddress = () => {
     if (getTokenAccess())
@@ -107,7 +100,7 @@ function Address(props) {
         .then(res => {
           if (res && res.data && Array.isArray(res.data)) {
             setAddresses(res.data)
-            res.data.length && setSelectedAddress(res.data[0])
+            res.data.length && setSelectedAddress(res.data[0].address_id)
           }
         })
   }
@@ -119,10 +112,8 @@ function Address(props) {
         }
       })
   }
-  const onChangeValues = (type, value) => {
-    if (type === 'address') {
-      setSelectedAddress(value)
-    }
+  const onChangeValues = (e) => {
+    setSelectedAddress(e.target.value)
   }
 
   const onAddAddress = (values) => {
@@ -161,7 +152,7 @@ function Address(props) {
   const onFinalOrder = () => {
     const user = JSON.parse(getUser())
     if (getCartId() && user && user.national_code && user.phone) {
-      selectedAddress && Api.selectAddressCart(getCartId(), selectedAddress.address_id, 'ir')
+      selectedAddress && Api.selectAddressCart(getCartId(), selectedAddress, 'ir')
         .then(resp => router.push('/cart/payment'))
         .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
 
@@ -280,13 +271,15 @@ function Address(props) {
         <div className={styles.cartItemCard}>
           {
             addresses && addresses.map((address, index) =>
-              <div key={index}>
+              <div key={index} className={styles.addressItem}>
                 <input type={"radio"} id={`address${index}`}
                        name="address" value={address.address_id}
-                       checked={selectedAddress.address_id == address.address_id}
-                       onChange={(e) => onChangeValues('address', address)}/>
+                       checked={selectedAddress == address.address_id}
+                       onChange={onChangeValues}/>
                 <label htmlFor={`address${index}`}>
-                  <h3>{address.title}, {address.country.name}, {address.province.name}, {address.city.name}, {address.address_line_one}, {address.postal_code}, {address.phone}, {address.receiver}</h3>
+                  <h3>{address.title}:</h3>
+                  آدرس:{address.country.name}, {address.province.name}, {address.city.name}: {address.address_line_one}<br/>
+                  کدپستی:{address.postal_code} تلفن: {address.phone} گیرنده: {address.receiver}<br/>
                   <button onClick={() => onDeleteAddress(address.address_id)}>delete</button>
                   {/*<button>edit</button>*/}
                 </label>
@@ -305,8 +298,9 @@ function Address(props) {
 }
 
 const mapStateToProps = state => ({
-  cartInfo: selectCartInfo(state),
+  cartData: selectCartInfo(state),
   gustTokenInfo: selectGustTokenInfo(state),
+  isRefreshToken: isRefreshTokenSuccess(state)
 });
 
 

@@ -174,9 +174,11 @@
   white-space: nowrap;
 }
 
+.card div,
 .cart input,
 .card select {
   padding: 10px;
+  margin: 8px;
 }
 
 .logo {
@@ -284,8 +286,16 @@
 }
 
 .cartItemCard img {
-  width: 200px;
+  /*width: 200px;*/
   margin: 16px;
+}
+
+.addressItem {
+  padding: 8px;
+  margin: 16px;
+  border: 1px solid #c7c7c7;
+  border-radius: 10px;
+
 }
 
 .detailCart {
@@ -322,6 +332,7 @@
   padding: 8px;
   margin: 4px;
 }
+
 
 /*.cartItemCard img {*/
 /*  width: 64px;*/

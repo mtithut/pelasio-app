@@ -51,6 +51,7 @@ export default function ProductFilters({categories, filters, onChange}) {
     <div className={styles.card}>
       <div>
         <input type="radio" id="label" name="more-relevant"
+               defaultChecked={filters.sort === 'relevant,desc'}
                checked={filters.sort === 'relevant,desc'}
                onClick={event => onChange({sort: 'relevant,desc'})}/>
         <label htmlFor="more-relevant">مرتبط ترین</label>

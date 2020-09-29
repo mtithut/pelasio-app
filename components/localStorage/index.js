@@ -15,7 +15,11 @@ export const getCartId = () => (localStorage.getItem('cartId'))
 export const removeCartId = () => (localStorage.removeItem('cartId'))
 
 export const setExpiresTime = (expiresTime) => (localStorage.setItem('expiresTime', expiresTime))
-export const getExpiresTime = () => (localStorage.getItem('expiresTime'))
+export const getExpiresTime = () => (parseInt(localStorage.getItem('expiresTime')))
 export const removeExpiresTime = () => (localStorage.removeItem('expiresTime'))
+
+export const setTokenDurationTime = (duration) => (localStorage.setItem('durationTime', duration))
+export const getTokenDurationTime = () => (parseInt(localStorage.getItem('durationTime')))
+export const removeTokenDurationTime = () => (localStorage.removeItem('durationTime'))
 
 export const clearUserInfo = () => (localStorage.clear())
