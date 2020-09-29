@@ -38,7 +38,7 @@ function Login(props) {
 
   useEffect(() => {
     if (loginSuccess) {
-      router.push('/')
+      router.back()
     }
   }, [loginSuccess])
 

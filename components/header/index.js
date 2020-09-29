@@ -17,6 +17,7 @@ import {bindActionCreators} from "redux";
 import {cartRefresh, cleanCartState} from "../../redux/cart/actions";
 import {cleanLoginState, getGustToken, refreshToken} from "../../redux/auth/actions";
 import {doRefreshToken, isExpireToken} from "../utility/validation";
+import Routes from '../../components/routes'
 
 function Header(props) {
   const {cleanLoginState, cartRefresh, cleanCartState, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
@@ -25,7 +26,6 @@ function Header(props) {
   const router = useRouter()
 
   useEffect(() => {
-
     if (isExpireToken()) {
       console.log('isExpireToken')
       onLogout()
@@ -59,7 +59,10 @@ function Header(props) {
     cleanLoginState()
     cleanCartState()
     getGustToken()
-    router.push('/')
+
+    if ([Routes.cart,Routes.cartAddress, Routes.cartPayment].includes(router.pathname)) {
+      router.push(Routes.cart)
+    }
   }
 
   const getCartItemCount = () => {

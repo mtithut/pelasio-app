@@ -1,6 +1,13 @@
 import ActionType from './actionType'
 import Api from '../../api'
-import {setCartId, setExpiresTime, setTokenAccess, setTokenDurationTime, setUser} from "../../components/localStorage";
+import {
+  removeCartId,
+  setCartId,
+  setExpiresTime,
+  setTokenAccess,
+  setTokenDurationTime,
+  setUser
+} from "../../components/localStorage";
 
 export const cleanLoginState = () => (dispatch) => {
   dispatch({type: ActionType.LOGIN_INITIAL})
@@ -72,7 +79,7 @@ function initUserTokenInfo(data) {
     setTokenAccess(data.access_token)
 
     if (data.user) {
-      data.user.cart_id && setCartId(data.user.cart_id)
+      data.user.cart_id ? setCartId(data.user.cart_id) : removeCartId()
       setUser(JSON.stringify(data.user))
     }
 
