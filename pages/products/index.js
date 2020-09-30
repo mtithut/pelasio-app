@@ -7,10 +7,13 @@ import withMainLayout from "../../components/mainLayout";
 import ProductFilters from "../../components/productFilters";
 import {getCategoryList, setCategoryList} from "../../components/localStorage";
 import Routes from '../../components/routes'
+import Pagination from '../../components/pagination';
 
 function Products(props) {
-  const {productList} = props
-  const [products, setProducts] = useState(productList || [])
+  const {productData} = props
+  const {metadata, result} = productData
+  const [products, setProducts] = useState(result || [])
+  const [pagination, setPagination] = useState(metadata.pagination || [])
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
@@ -48,7 +51,11 @@ function Products(props) {
   const loadProducts = (filters) => {
     Api.getProductSearch(filters)
       .then(res => {
-        res && res.data && res.data.result && setProducts(res.data.result)
+        if (res && res.data) {
+          const data = res.data
+          setProducts(data.result || [])
+          data.metadata && setPagination(data.metadata.pagination || {})
+        }
       })
   }
 
@@ -74,6 +81,15 @@ function Products(props) {
 
       </div>
     </div>
+
+    <Pagination
+      currentPage={pagination.current_page}
+      totalPage={pagination.total_pages}
+      onChange={page => {
+        filters.page = page
+        loadProducts(filters)
+      }}/>
+
   </>
 
 }
@@ -82,7 +98,7 @@ export async function getServerSideProps() {
   let res = await Api.getProductSearch()
   return {
     props: {
-      productList: res && res.data && res.data.result
+      productData: res && res.data && res.data
     }
   }
 

@@ -333,7 +333,11 @@
   margin: 4px;
 }
 
-
-/*.cartItemCard img {*/
-/*  width: 64px;*/
-/*}*/
+.pagination button{
+  padding: 4px;
+  margin: 4px;
+  font-size: medium;
+}
+.currentPage{
+  background-color: lightblue;
+}
