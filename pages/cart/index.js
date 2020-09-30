@@ -15,6 +15,7 @@ import withMainLayout from "../../components/mainLayout";
 import {clearCustomerInfo, getCartId, getTokenAccess} from "../../components/localStorage";
 import MessageHandler from "../../components/messageHandler";
 import Routes from '../../components/routes'
+import {getErrorMessage} from "../../components/utility/respMessageHandler";
 
 function Cart(props) {
   const {
@@ -48,7 +49,19 @@ function Cart(props) {
   useEffect(() => {
     if (getTokenAccess() && getCartId())
       cartRefresh(getCartId(), 'ir', 'fa')
-  }, [gustTokenInfo, changeCartStatus,])
+  }, [gustTokenInfo,])
+
+  useEffect(() => {
+    console.log('changeCartStatus', changeCartStatus)
+    const message = changeCartStatus.isSuccess ? changeCartStatus.data.message : changeCartStatus.isFailed ? getErrorMessage(changeCartStatus.data) : ''
+    setAlertMessage({
+      isSuccess: changeCartStatus.isSuccess,
+      isError: changeCartStatus.isFailed,
+      isWarning: false,
+      message: message
+    })
+  }, [changeCartStatus])
+
 
   const onClickItem = (catalogId) => {
     router.push(`${Routes.products}/${catalogId}`)

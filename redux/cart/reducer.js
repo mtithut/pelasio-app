@@ -23,5 +23,5 @@ export const changeCartStatus = (state) => {
   const isSuccess = res.status === API_CALL_STATUS.SUCCESS
   const isFailed = res.status === API_CALL_STATUS.FAILED
 
-  return {isSuccess: isSuccess, isFailed: isFailed, data: res}
+  return {isSuccess: isSuccess, isFailed: isFailed, data: res.data}
 }
