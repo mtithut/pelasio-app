@@ -72,6 +72,7 @@ function Products(props) {
             products.map(product => <ProductCard key={`pro-${product.unique_id}`} name={product.name}
                                                  logo={product.default_photo}
                                                  pricing={product.pricing}
+                                                 stock={product.in_stock}
                                                  onClick={event => onClickItem(product.catalog_unique_id)}/>)
 
           }
