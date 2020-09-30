@@ -14,7 +14,7 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
     .matches(/\d{10}/, 'Is not in correct format national Code')
     .required('Required'),
   phone: Yup.string()
-    .matches(/^9\d{9}$/, 'Is not in correct format phone.Without 0')
+    .matches(/^9\d{9}$/, 'The Phone Must be 10 characters Without 0')
     .notRequired(),
 });
 

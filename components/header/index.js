@@ -12,7 +12,15 @@ import {
 } from "../../redux/auth/reducer";
 import CustomHead from "../head";
 import {useRouter} from "next/router";
-import {clearCustomerInfo, getCartId, getExpiresTime, getTokenAccess, getUser} from "../localStorage";
+import {
+  clearCustomerInfo,
+  getCartId,
+  getExpiresTime,
+  getTokenAccess,
+  getUser,
+  removeCartId,
+  setCartId
+} from "../localStorage";
 import {bindActionCreators} from "redux";
 import {cartRefresh, cleanCartState} from "../../redux/cart/actions";
 import {cleanLoginState, getGustToken, refreshToken} from "../../redux/auth/actions";
@@ -20,7 +28,7 @@ import {doRefreshToken, isExpireToken} from "../utility/validation";
 import Routes from '../../components/routes'
 
 function Header(props) {
-  const {cleanLoginState, cartRefresh, cleanCartState, cartInfo,cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
+  const {cleanLoginState, cartRefresh, cleanCartState, cartInfo, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
   const [user, setUserInfo] = useState(undefined)
   // const [cartInfo, setCartInfo] = useState(cartData)
   const router = useRouter()
@@ -42,9 +50,12 @@ function Header(props) {
       !getTokenAccess() && getGustToken()
   }, [])
 
-  // useEffect(() => {
-  //   setCartInfo(cartData)
-  // }, [cartData])
+  useEffect(() => {
+    if (getCartId() && cartInfo && getCartId() !== cartInfo.unique_id) {
+      removeCartId()
+      setCartId(cartInfo.unique_id)
+    }
+  }, [cartInfo])
 
   useEffect(() => {
     if (gustTokenInfo || isRefreshToken) {
@@ -61,7 +72,7 @@ function Header(props) {
     cleanCartState()
     getGustToken()
 
-    if ([Routes.cart,Routes.cartAddress, Routes.cartPayment].includes(router.pathname)) {
+    if ([Routes.cart, Routes.cartAddress, Routes.cartPayment].includes(router.pathname)) {
       router.push(Routes.cart)
     }
   }
