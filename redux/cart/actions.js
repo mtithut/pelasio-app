@@ -15,44 +15,44 @@ export const addToCart = (itemId, quality) => (dispatch) => {
 };
 
 export const cartIncrease = (cartId, itemId) => (dispatch) => {
-  dispatch({type: ActionType.INCREASE_CART_PENDING})
+  dispatch({type: ActionType.CHANGE_CART_PENDING})
   Api.cartIncreaseItem(cartId, itemId)
     .then(data => {
-      dispatch({type: ActionType.INCREASE_CART_SUCCESS, payload: data})
+      dispatch({type: ActionType.CHANGE_CART_SUCCESS, payload: data})
       dispatch({type: ActionType.CART_SUCCESS, payload: data})
     })
     .catch(error => {
         console.log('error', error)
-        dispatch({type: ActionType.INCREASE_CART_FAILED, payload: error})
+        dispatch({type: ActionType.CHANGE_CART_FAILED, payload: error})
       }
     )
 };
 
 export const cartDecrease = (cartId, itemId) => (dispatch) => {
-  dispatch({type: ActionType.DECREASE_CART_PENDING})
+  dispatch({type: ActionType.CHANGE_CART_PENDING})
   Api.cartDecreaseItem(cartId, itemId)
     .then(data => {
-      dispatch({type: ActionType.DECREASE_CART_SUCCESS, payload: data})
+      dispatch({type: ActionType.CHANGE_CART_SUCCESS, payload: data})
       dispatch({type: ActionType.CART_SUCCESS, payload: data})
     })
     .catch(error => {
         console.log('error', error)
-        dispatch({type: ActionType.DECREASE_CART_FAILED, payload: error})
+        dispatch({type: ActionType.CHANGE_CART_FAILED, payload: error})
       }
     )
 };
 
 
 export const cartDelete = (cartId, itemId) => (dispatch) => {
-  dispatch({type: ActionType.DELETE_CART_PENDING})
+  dispatch({type: ActionType.CHANGE_CART_PENDING})
   Api.cartsDeleteItem(cartId, itemId)
     .then(data => {
-      dispatch({type: ActionType.DELETE_CART_SUCCESS, payload: data})
+      dispatch({type: ActionType.CHANGE_CART_SUCCESS, payload: data})
       dispatch({type: ActionType.CART_SUCCESS, payload: data})
     })
     .catch(error => {
         console.log('error', error)
-        dispatch({type: ActionType.DELETE_CART_FAILED, payload: error})
+        dispatch({type: ActionType.CHANGE_CART_FAILED, payload: error})
       }
     )
 };

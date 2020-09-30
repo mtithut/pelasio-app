@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {decreaseCartStatus, deleteCartStatus, increaseCartStatus, selectCartInfo} from "../../redux/cart/reducer";
+import {
+  changeCartStatus,
+  selectCartInfo
+} from "../../redux/cart/reducer";
 import {bindActionCreators} from "redux";
 import {cartDecrease, cartDelete, cartIncrease, cartRefresh} from "../../redux/cart/actions";
 import styles from '../../styles/Home.module.css'
@@ -8,7 +11,6 @@ import CartItem from "../../components/cartItem";
 import {useRouter} from "next/router";
 import {selectGustTokenInfo} from "../../redux/auth/reducer";
 import {getGustToken} from "../../redux/auth/actions";
-import Header from "../../components/header";
 import withMainLayout from "../../components/mainLayout";
 import {clearCustomerInfo, getCartId, getTokenAccess} from "../../components/localStorage";
 import MessageHandler from "../../components/messageHandler";
@@ -20,9 +22,7 @@ function Cart(props) {
     cartIncrease,
     cartDecrease,
     cartDelete,
-    increaseCartStatus,
-    decreaseCartStatus,
-    deleteCartStatus,
+    changeCartStatus,
     cartRefresh,
     gustTokenInfo,
     getGustToken,
@@ -48,8 +48,7 @@ function Cart(props) {
   useEffect(() => {
     if (getTokenAccess() && getCartId())
       cartRefresh(getCartId(), 'ir', 'fa')
-  }, [gustTokenInfo, increaseCartStatus,
-    decreaseCartStatus, deleteCartStatus,])
+  }, [gustTokenInfo, changeCartStatus,])
 
   const onClickItem = (catalogId) => {
     router.push(`${Routes.products}/${catalogId}`)
@@ -119,9 +118,7 @@ function Cart(props) {
 
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
-  increaseCartStatus: increaseCartStatus(state),
-  decreaseCartStatus: decreaseCartStatus(state),
-  deleteCartStatus: deleteCartStatus(state),
+  changeCartStatus: changeCartStatus(state),
   gustTokenInfo: selectGustTokenInfo(state)
 
 });
