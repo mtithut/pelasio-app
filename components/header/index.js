@@ -12,7 +12,7 @@ import {
 } from "../../redux/auth/reducer";
 import CustomHead from "../head";
 import {useRouter} from "next/router";
-import {clearUserInfo, getCartId, getExpiresTime, getTokenAccess, getUser} from "../localStorage";
+import {clearCustomerInfo, getCartId, getExpiresTime, getTokenAccess, getUser} from "../localStorage";
 import {bindActionCreators} from "redux";
 import {cartRefresh, cleanCartState} from "../../redux/cart/actions";
 import {cleanLoginState, getGustToken, refreshToken} from "../../redux/auth/actions";
@@ -56,7 +56,7 @@ function Header(props) {
   const onLogout = () => {
     // setCartInfo(undefined)
     setUserInfo(undefined)
-    clearUserInfo()
+    clearCustomerInfo()
     cleanLoginState()
     cleanCartState()
     getGustToken()

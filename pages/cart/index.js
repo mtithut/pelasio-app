@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {selectCartInfo} from "../../redux/cart/reducer";
+import {decreaseCartStatus, deleteCartStatus, increaseCartStatus, selectCartInfo} from "../../redux/cart/reducer";
 import {bindActionCreators} from "redux";
 import {cartDecrease, cartDelete, cartIncrease, cartRefresh} from "../../redux/cart/actions";
 import styles from '../../styles/Home.module.css'
@@ -10,7 +10,7 @@ import {selectGustTokenInfo} from "../../redux/auth/reducer";
 import {getGustToken} from "../../redux/auth/actions";
 import Header from "../../components/header";
 import withMainLayout from "../../components/mainLayout";
-import {clearUserInfo, getCartId, getTokenAccess} from "../../components/localStorage";
+import {clearCustomerInfo, getCartId, getTokenAccess} from "../../components/localStorage";
 import MessageHandler from "../../components/messageHandler";
 import Routes from '../../components/routes'
 
@@ -20,9 +20,12 @@ function Cart(props) {
     cartIncrease,
     cartDecrease,
     cartDelete,
+    increaseCartStatus,
+    decreaseCartStatus,
+    deleteCartStatus,
     cartRefresh,
     gustTokenInfo,
-    getGustToken
+    getGustToken,
   } = props
   const router = useRouter()
   const [{isSuccess, isWarning, isError, message}, setAlertMessage] = useState({
@@ -37,16 +40,16 @@ function Cart(props) {
       if (getTokenAccess() && getCartId())
         cartRefresh(getCartId(), 'ir', 'fa')
       else if (!getTokenAccess()) {
-        clearUserInfo()
+        clearCustomerInfo()
         getGustToken()
       }
   }, [])
 
   useEffect(() => {
-    if (!cartInfo)
-      if (getTokenAccess() && getCartId())
-        cartRefresh(getCartId(), 'ir', 'fa')
-  }, [gustTokenInfo])
+    if (getTokenAccess() && getCartId())
+      cartRefresh(getCartId(), 'ir', 'fa')
+  }, [gustTokenInfo, increaseCartStatus,
+    decreaseCartStatus, deleteCartStatus,])
 
   const onClickItem = (catalogId) => {
     router.push(`${Routes.products}/${catalogId}`)
@@ -54,7 +57,7 @@ function Cart(props) {
   const increaseItem = (item) => {
     let quantity = item.quantity,
       maxQuantity = item.variation && item.variation.maximum_quantity,
-      itemId = item.variation && item.variation.unique_id
+      itemId = item.unique_id
     if (getCartId() && quantity < maxQuantity) {
       cartIncrease(getCartId(), itemId)
     } else
@@ -68,7 +71,7 @@ function Cart(props) {
   const decreaseItem = (item) => {
     let quantity = item.quantity,
       minQuantity = item.variation && item.variation.minimum_quantity,
-      itemId = item.variation && item.variation.unique_id
+      itemId = item.unique_id
     if (getCartId() && quantity > minQuantity) {
       cartDecrease(getCartId(), itemId)
     } else setAlertMessage({
@@ -116,7 +119,11 @@ function Cart(props) {
 
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
+  increaseCartStatus: increaseCartStatus(state),
+  decreaseCartStatus: decreaseCartStatus(state),
+  deleteCartStatus: deleteCartStatus(state),
   gustTokenInfo: selectGustTokenInfo(state)
+
 });
 
 

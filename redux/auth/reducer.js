@@ -4,7 +4,7 @@ import {combineReducers} from "redux";
 
 const loginResp = reducerBuilder(ActionType.LOGIN_SUCCESS, ActionType.LOGIN_FAILED, ActionType.LOGIN_PENDING, ActionType.LOGIN_INITIAL)
 const registerResp = reducerBuilder(ActionType.REGISTER_SUCCESS, ActionType.REGISTER_FAILED, ActionType.REGISTER_PENDING, ActionType.REGISTER_INITIAL)
-const gustTokenResp = reducerBuilder(ActionType.GUST_TOKEN_SUCCESS, ActionType.GUST_TOKEN_FAILED, ActionType.GUST_TOKEN_PENDING)
+const gustTokenResp = reducerBuilder(ActionType.GUST_TOKEN_SUCCESS, ActionType.GUST_TOKEN_FAILED, ActionType.GUST_TOKEN_PENDING,ActionType.GUST_TOKEN_INITIAL)
 const refreshTokenResp = reducerBuilder(ActionType.REFRESH_TOKEN_SUCCESS, ActionType.REFRESH_TOKEN_FAILED, ActionType.REFRESH_TOKEN_PENDING)
 
 export default combineReducers({
@@ -32,6 +32,8 @@ export const selectGustTokenInfo = (state) => {
   const res = selectGustToken(state)
   return res && res.data && res.data.data
 }
+export const gustTokenState = (state) => selectGustToken(state).status
+
 export const selectRefreshToken = (state) => state.authReducer.refreshTokenResp;
 export const selectRefreshTokenInfo = (state) => {
   const res = selectRefreshToken(state)

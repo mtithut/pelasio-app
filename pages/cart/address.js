@@ -12,7 +12,7 @@ import {useRouter} from "next/router";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import * as Yup from "yup";
 import {
-  clearUserInfo,
+  clearCustomerInfo,
   getCartId,
   getTokenAccess,
   getUser,

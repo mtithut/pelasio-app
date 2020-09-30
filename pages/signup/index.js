@@ -4,7 +4,7 @@ import styles from '../../styles/Home.module.css'
 import {connect} from "react-redux";
 import {isValidEmail, isValidPassword} from "../../components/utility/validation";
 import {bindActionCreators} from "redux";
-import {login, cleanLoginState} from "../../redux/auth/actions";
+import {login, cleanLoginState, cleanGustTokenState} from "../../redux/auth/actions";
 import {
   isLoginFailed,
   isLoginSuccess,
@@ -29,7 +29,7 @@ const DisplayingErrorMessagesSchema = Yup.object().shape({
 });
 
 function Login(props) {
-  const {LoginData, loginSuccess, loginFailed, login, cleanLoginState} = props
+  const {LoginData, loginSuccess, loginFailed, login, cleanLoginState,cleanGustTokenState} = props
   console.log('status', LoginData)
   const router = useRouter()
 
@@ -39,6 +39,8 @@ function Login(props) {
   }, [])
 
   useEffect(() => {
+    if(loginSuccess)
+      cleanGustTokenState()
     if (getUser()) {
       router.back()
     }
@@ -67,12 +69,6 @@ function Login(props) {
       <MessageHandler isError={loginFailed}
                       isSuccess={loginSuccess}
                       message={getMessageResult()}/>
-      {/*<div className={styles.success} hidden={!loginSuccess}>*/}
-      {/*  <span>{(LoginData.data && LoginData.data.message) || 'ورود با موفقیت انجام شد'}</span>*/}
-      {/*</div>*/}
-      {/*<div className={styles.error} hidden={!loginFailed}>*/}
-      {/*  <span>{LoginData && getErrorMessage(LoginData.errors)}</span>*/}
-      {/*</div>*/}
       <Formik
         initialValues={{email: '', password: ''}}
         validationSchema={DisplayingErrorMessagesSchema}
@@ -118,7 +114,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  login, cleanLoginState,
+  login, cleanLoginState,cleanGustTokenState
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -91,14 +91,6 @@ function Register(props) {
       <MessageHandler isError={registerFailed}
                       isSuccess={registerSuccess}
                       message={getMessageResult()}/>
-      {/*<div className={styles.success} hidden={!registerSuccess}>*/}
-      {/*  <span>{(registerData.data && registerData.data.message) || 'ثبت اطلاعات با موفقیت انجام شد'}</span>*/}
-      {/*</div>*/}
-      {/*<div className={styles.error} hidden={!registerFailed}>*/}
-      {/*  {*/}
-      {/*    getErrorMessage(registerData.errors)*/}
-      {/*  }*/}
-      {/*</div>*/}
       <Formik
         initialValues={{
           firstname: '',

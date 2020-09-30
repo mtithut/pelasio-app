@@ -6,7 +6,7 @@ import {selectCartInfo} from "../../redux/cart/reducer";
 import {bindActionCreators} from "redux";
 import {addToCart} from "../../redux/cart/actions";
 import Header from "../../components/header";
-import {isLoginSuccess, loginState} from "../../redux/auth/reducer";
+import {gustTokenState, isLoginSuccess, loginState} from "../../redux/auth/reducer";
 import {useRouter} from "next/router";
 import withMainLayout from "../../components/mainLayout";
 import {getCartId, getUser} from "../../components/localStorage";
@@ -14,7 +14,7 @@ import Routes from '../../components/routes'
 import {refreshToken} from "../../redux/auth/actions";
 
 function Product(props) {
-  const {productRes, addToCart, isLogin, cartInfo, refreshToken} = props
+  const {productRes, addToCart, isLogin, cartInfo, refreshToken, gustStatus} = props
   const router = useRouter()
   const [selectedVariation, setVariation] = useState(undefined)
   const [quantity, setQuantity] = useState(0)
@@ -27,17 +27,19 @@ function Product(props) {
   })
   // console.log('product', productRes)
 
-  useEffect(() => {
-    setUserInfo(JSON.parse(getUser()))
-  }, [])
+  // useEffect(() => {
+  //   setUserInfo(JSON.parse(getUser()))
+  // }, [])
 
   useEffect(() => {
+    console.log('setUserInfo', getUser())
     setUserInfo(JSON.parse(getUser()))
-  }, [isLogin])
+  }, [isLogin, gustStatus])
 
   useEffect(() => {
     initProductInfo()
   }, [productRes])
+
   useEffect(() => {
     !getCartId() && refreshToken()
   }, [cartInfo])
@@ -146,6 +148,7 @@ export async function getServerSideProps(context) {
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
   isLogin: isLoginSuccess(state),
+  gustStatus: gustTokenState(state)
 });
 
 

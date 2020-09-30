@@ -22,4 +22,4 @@ export const setTokenDurationTime = (duration) => (localStorage.setItem('duratio
 export const getTokenDurationTime = () => (parseInt(localStorage.getItem('durationTime')))
 export const removeTokenDurationTime = () => (localStorage.removeItem('durationTime'))
 
-export const clearUserInfo = () => (localStorage.clear())
+export const clearCustomerInfo = () => (localStorage.clear())

@@ -28,6 +28,7 @@ export const urls = {
 }
 
 const post = function (url, body = '', headers = {}) {
+  headers = Object.assign(headers, {'accept-language': 'fa'})
   return axios.post(baseUrl + url, body, {headers: headers})
     .then((response) => response.data)
     .catch((error) => {

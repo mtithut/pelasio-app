@@ -1,7 +1,8 @@
 import ActionType from './actionType'
 import Api from '../../api'
 import {
-  removeCartId,
+  clearCustomerInfo,
+  removeCartId, removeUser,
   setCartId,
   setExpiresTime,
   setTokenAccess,
@@ -17,19 +18,8 @@ export const login = (username, password) => (dispatch) => {
   Api.login(username, password)
     .then(res => {
       res && initUserTokenInfo(res.data)
-      /*if (res && res.data && res.data) {
-        setTokenAccess(res.data.access_token)
-
-        if (res.data.user) {
-          res.data.user.cart_id && setCartId(res.data.user.cart_id)
-          setUser(JSON.stringify(res.data.user))
-        }
-
-        const date = new Date()
-        res.data.expires_in && setExpiresTime((date.getTime() / 1000) + parseInt(res.data.expires_in)) //set expire time of token
-        res.data.expires_in && setTokenDurationTime(parseInt(res.data.expires_in)) //set duration time of token
-      }*/
       dispatch({type: ActionType.LOGIN_SUCCESS, payload: res})
+
     })
     .catch(error => {
         console.log('error', error)
@@ -49,10 +39,15 @@ export const register = (firstname, lastname, email, country, password, password
     )
 };
 
+export const cleanGustTokenState = () => (dispatch) => {
+  dispatch({type: ActionType.GUST_TOKEN_INITIAL})
+}
 export const getGustToken = () => (dispatch) => {
   dispatch({type: ActionType.GUST_TOKEN_PENDING})
   Api.getGustToken()
     .then(res => {
+      dispatch({type: ActionType.LOGIN_INITIAL})
+      clearCustomerInfo()
       res && res.data && res.data && setTokenAccess(res.data.access_token)
       res && res.data && res.data && res.data.cart_id && setCartId(res.data.cart_id)
       dispatch({type: ActionType.GUST_TOKEN_SUCCESS, payload: res})
