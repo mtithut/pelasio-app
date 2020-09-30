@@ -11,17 +11,18 @@ import Pagination from '../../components/pagination';
 
 function Products(props) {
   const {productData} = props
+  console.log(productData)
   const {metadata, result} = productData
   const [products, setProducts] = useState(result || [])
   const [pagination, setPagination] = useState(metadata.pagination || [])
   const router = useRouter()
   const [categories, setCategories] = useState([])
   const [filters, setFilters] = useState({
-    category: undefined,
-    discount: true,
+/*    category: undefined,
+    discount: false,
     'in-stock': false,
     'fast-delivery': false,
-    original: false,
+    original: false,*/
     sort: 'price,asc',//price,desc  ,date,asc,date,desc
 
   })
@@ -95,7 +96,8 @@ function Products(props) {
 }
 
 export async function getServerSideProps() {
-  let res = await Api.getProductSearch()
+  const params = {sort: 'price,asc'}
+  let res = await Api.getProductSearch(params)
   return {
     props: {
       productData: res && res.data && res.data

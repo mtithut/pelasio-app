@@ -5,6 +5,10 @@ export default function Pagination({currentPage, totalPage, onChange}) {
   console.log(currentPage, totalPage,)
   return <div className={styles.pagination}>
     <button disabled={currentPage === 1}
+            onClick={() => onChange(1)}>
+      &lt;
+    </button>
+    <button disabled={currentPage === 1}
             onClick={() => onChange(currentPage - 1)}>prev
     </button>
 
@@ -15,6 +19,9 @@ export default function Pagination({currentPage, totalPage, onChange}) {
     {currentPage + 1 < totalPage ? '...' : ''}
     <button disabled={currentPage === totalPage}
             onClick={() => onChange(currentPage + 1)}>next
+    </button>
+    <button disabled={currentPage === totalPage}
+            onClick={() => onChange(totalPage)}>&gt;
     </button>
   </div>
 }
