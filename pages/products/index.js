@@ -33,6 +33,7 @@ function Products(props) {
         }
       })
   }, [])
+
   const addFilter = (filter) => {
     const newFilters = Object.assign(filters, filter);
     setFilters(newFilters)
@@ -43,6 +44,7 @@ function Products(props) {
     )
     loadProducts(newFilters)
   }
+
   const loadProducts = (filters) => {
     Api.getProductSearch(filters)
       .then(res => {

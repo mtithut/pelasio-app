@@ -1,7 +1,5 @@
 import ActionType from './actionType'
 import Api from '../../api'
-import {getTokenAccess} from "../../components/localStorage";
-import {INIT_STATE} from "../master/baseReducer";
 
 export const addToCart = (itemId, quality) => (dispatch) => {
   dispatch({type: ActionType.CART_PENDING})

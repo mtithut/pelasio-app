@@ -38,18 +38,19 @@ function Cart(props) {
 
   useEffect(() => {
     if (!cartInfo)
-      if (getTokenAccess() && getCartId())
+      if (getTokenAccess() && getCartId()) {
+        console.log('cart')
         cartRefresh(getCartId(), 'ir', 'fa')
-      else if (!getTokenAccess()) {
+      } else if (!getTokenAccess()) {
         clearCustomerInfo()
         getGustToken()
       }
   }, [])
 
-  useEffect(() => {
-    if (getTokenAccess() && getCartId())
-      cartRefresh(getCartId(), 'ir', 'fa')
-  }, [gustTokenInfo,])
+  // useEffect(() => {
+  //   if (getTokenAccess() && getCartId())
+  //     cartRefresh(getCartId(), 'ir', 'fa')
+  // }, [gustTokenInfo,])
 
   useEffect(() => {
     console.log('changeCartStatus', changeCartStatus)

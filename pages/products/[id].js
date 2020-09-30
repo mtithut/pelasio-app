@@ -2,16 +2,15 @@ import Api from "../../api";
 import React, {useEffect, useState} from "react";
 import styles from "../../styles/Home.module.css";
 import {connect} from "react-redux";
-import {selectCartInfo} from "../../redux/cart/reducer";
 import {bindActionCreators} from "redux";
+import {selectCartInfo} from "../../redux/cart/reducer";
+import {gustTokenState, isLoginSuccess} from "../../redux/auth/reducer";
 import {addToCart} from "../../redux/cart/actions";
-import Header from "../../components/header";
-import {gustTokenState, isLoginSuccess, loginState} from "../../redux/auth/reducer";
-import {useRouter} from "next/router";
+import {refreshToken} from "../../redux/auth/actions";
 import withMainLayout from "../../components/mainLayout";
 import {getCartId, getUser} from "../../components/localStorage";
+import {useRouter} from "next/router";
 import Routes from '../../components/routes'
-import {refreshToken} from "../../redux/auth/actions";
 
 function Product(props) {
   const {productRes, addToCart, isLogin, cartInfo, refreshToken, gustStatus} = props

@@ -28,27 +28,33 @@ import {doRefreshToken, isExpireToken} from "../utility/validation";
 import Routes from '../../components/routes'
 
 function Header(props) {
-  const {cleanLoginState, cartRefresh, cleanCartState, cartInfo, cartData, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
+  const {cleanLoginState, cartRefresh, cleanCartState, cartInfo, isLogin, userInfo, getGustToken, gustTokenInfo, refreshToken, isRefreshToken} = props
   const [user, setUserInfo] = useState(undefined)
-  // const [cartInfo, setCartInfo] = useState(cartData)
   const router = useRouter()
 
   useEffect(() => {
     if (isExpireToken()) {
-      console.log('isExpireToken')
       onLogout()
     } else if (doRefreshToken()) {
-      console.log('doRefreshToken')
       refreshToken()
     }
 
     setUserInfo(userInfo || JSON.parse(getUser()))
 
     if (getTokenAccess() && getCartId()) {
+      console.log('header')
       !cartInfo && cartRefresh(getCartId(), 'ir', 'fa')
     } else
       !getTokenAccess() && getGustToken()
   }, [])
+
+  useEffect(() => {
+    if (gustTokenInfo || isRefreshToken) {
+      console.log('header2')
+      getCartId() && cartRefresh(getCartId(), 'ir', 'fa')
+      setUserInfo(JSON.parse(getUser()))
+    }
+  }, [gustTokenInfo, isRefreshToken])
 
   useEffect(() => {
     if (getCartId() && cartInfo && getCartId() !== cartInfo.unique_id) {
@@ -56,13 +62,6 @@ function Header(props) {
       setCartId(cartInfo.unique_id)
     }
   }, [cartInfo])
-
-  useEffect(() => {
-    if (gustTokenInfo || isRefreshToken) {
-      getCartId() && cartRefresh(getCartId(), 'ir', 'fa')
-      setUserInfo(JSON.parse(getUser()))
-    }
-  }, [gustTokenInfo, isRefreshToken])
 
   const onLogout = () => {
     // setCartInfo(undefined)
