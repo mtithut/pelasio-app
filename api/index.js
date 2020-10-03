@@ -37,6 +37,7 @@ const post = function (url, body = '', headers = {}) {
 };
 
 const put = function (url, body = {}, headers = {}) {
+  headers = Object.assign(headers, {'accept-language': 'fa'})
   return axios.put(baseUrl + url, body, {headers: headers, /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {

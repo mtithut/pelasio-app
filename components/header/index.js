@@ -36,14 +36,16 @@ function Header(props) {
     if (isExpireToken()) {
       onLogout()
     } else if (doRefreshToken()) {
+      alert('doRefreshToken')
       refreshToken()
     }
 
     setUserInfo(userInfo || JSON.parse(getUser()))
 
+
     if (getTokenAccess() && getCartId()) {
-      console.log('header')
-      !cartInfo && cartRefresh(getCartId(), 'ir', 'fa')
+      if (!cartInfo && getCartId() && router.pathname !== Routes.cartAddress && router.pathname !== Routes.cartPayment)
+        cartRefresh(getCartId(), 'ir', 'fa')
     } else
       !getTokenAccess() && getGustToken()
   }, [])
@@ -51,15 +53,15 @@ function Header(props) {
   useEffect(() => {
     if (gustTokenInfo || isRefreshToken) {
       console.log('header2')
-      getCartId() && cartRefresh(getCartId(), 'ir', 'fa')
+      if (!cartInfo && getCartId() && router.pathname !== Routes.cartPayment)
+        cartRefresh(getCartId(), 'ir', 'fa')
       setUserInfo(JSON.parse(getUser()))
     }
   }, [gustTokenInfo, isRefreshToken])
 
   useEffect(() => {
-    if (getCartId() && cartInfo && getCartId() !== cartInfo.unique_id) {
-      removeCartId()
-      setCartId(cartInfo.unique_id)
+    if (cartInfo && parseInt(getCartId()) !== cartInfo.unique_id && getUser()) {
+      refreshToken()
     }
   }, [cartInfo])
 

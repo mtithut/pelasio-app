@@ -60,6 +60,7 @@ function Address(props) {
     refreshToken,
     isRefreshToken
   } = props
+  const [waiting, setWaiting] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState(undefined)
   const [addresses, setAddresses] = useState([])
   const [countries, setCountries] = useState([])
@@ -89,9 +90,8 @@ function Address(props) {
           }
         })
 
-      if (getCartId()) {
-        cartRefresh(getCartId(), 'ir', 'fa')
-      } else router.push(Routes.cart)
+      if (!cartInfo)
+        router.push(Routes.cart)
     }
   }, [])
 
@@ -142,20 +142,32 @@ function Address(props) {
 
   }
   const onDeleteAddress = (addressId) => {
+    setWaiting(true)
     Api.deleteAddress(addressId)
-      .then(res => loadAddress())
+      .then(res => {
+        setWaiting(false)
+        loadAddress()
+      })
       .catch(reason => {
         setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
+        setWaiting(false)
       })
 
   }
 
   const onFinalOrder = () => {
     const user = JSON.parse(getUser())
-    if (getCartId() && user && user.national_code && user.phone) {
-      selectedAddress && Api.selectAddressCart(getCartId(), selectedAddress, 'ir')
-        .then(resp => router.push(Routes.cartPayment))
-        .catch(reason => setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)}))
+    if (getCartId() && user && user.national_code && user.phone && selectedAddress) {
+      setWaiting(true)
+      Api.selectAddressCart(getCartId(), selectedAddress, 'ir')
+        .then(resp => {
+          setWaiting(false)
+          router.push(Routes.cartPayment)
+        })
+        .catch(reason => {
+          setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
+          setWaiting(false)
+        })
 
     } else {
       setConfirmationProfileView(true)
@@ -263,7 +275,7 @@ function Address(props) {
         </div>
         <div className={styles.cartPayment}>
           <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
-          <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
+          <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length || waiting}
                   onClick={onFinalOrder}>نهایی سازی سفارش
           </button>
 
@@ -281,7 +293,7 @@ function Address(props) {
                   <h3>{address.title}:</h3>
                   آدرس:{address.country.name}, {address.province.name}, {address.city.name}: {address.address_line_one}<br/>
                   کدپستی:{address.postal_code} تلفن: {address.phone} گیرنده: {address.receiver}<br/>
-                  <button onClick={() => onDeleteAddress(address.address_id)}>delete</button>
+                  <button disabled={waiting} onClick={() => onDeleteAddress(address.address_id)}>delete</button>
                   {/*<button>edit</button>*/}
                 </label>
               </div>

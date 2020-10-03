@@ -9,10 +9,10 @@ import {cartDecrease, cartDelete, cartIncrease, cartRefresh} from "../../redux/c
 import styles from '../../styles/Home.module.css'
 import CartItem from "../../components/cartItem";
 import {useRouter} from "next/router";
-import {selectGustTokenInfo} from "../../redux/auth/reducer";
-import {getGustToken} from "../../redux/auth/actions";
+import {isRefreshTokenSuccess, selectGustTokenInfo} from "../../redux/auth/reducer";
+import {getGustToken, refreshToken} from "../../redux/auth/actions";
 import withMainLayout from "../../components/mainLayout";
-import {clearCustomerInfo, getCartId, getTokenAccess} from "../../components/localStorage";
+import {clearCustomerInfo, getCartId, getTokenAccess, getUser} from "../../components/localStorage";
 import MessageHandler from "../../components/messageHandler";
 import Routes from '../../components/routes'
 import {getErrorMessage} from "../../components/utility/respMessageHandler";
@@ -26,7 +26,8 @@ function Cart(props) {
     changeCartStatus,
     cartRefresh,
     gustTokenInfo,
-    getGustToken,
+    getGustToken, refreshToken, isRefreshToken
+
   } = props
   const router = useRouter()
   const [{isSuccess, isWarning, isError, message}, setAlertMessage] = useState({
@@ -37,23 +38,20 @@ function Cart(props) {
   })
 
   useEffect(() => {
-    if (!cartInfo)
+    if (getUser()) refreshToken()
+  }, [])
+
+  useEffect(() => {
+    if (isRefreshToken)
       if (getTokenAccess() && getCartId()) {
-        console.log('cart')
         cartRefresh(getCartId(), 'ir', 'fa')
       } else if (!getTokenAccess()) {
         clearCustomerInfo()
         getGustToken()
       }
-  }, [])
-
-  // useEffect(() => {
-  //   if (getTokenAccess() && getCartId())
-  //     cartRefresh(getCartId(), 'ir', 'fa')
-  // }, [gustTokenInfo,])
+  }, [isRefreshToken])
 
   useEffect(() => {
-    console.log('changeCartStatus', changeCartStatus)
     const message = changeCartStatus.isSuccess ? changeCartStatus.data.message : changeCartStatus.isFailed ? getErrorMessage(changeCartStatus.data) : ''
     setAlertMessage({
       isSuccess: changeCartStatus.isSuccess,
@@ -133,7 +131,8 @@ function Cart(props) {
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
   changeCartStatus: changeCartStatus(state),
-  gustTokenInfo: selectGustTokenInfo(state)
+  gustTokenInfo: selectGustTokenInfo(state),
+  isRefreshToken: isRefreshTokenSuccess(state),
 
 });
 
@@ -143,6 +142,8 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   cartDecrease,
   cartDelete,
   cartRefresh,
+  refreshToken,
   getGustToken
+
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Cart, 'سبد خرید شما'));

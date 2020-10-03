@@ -22,6 +22,7 @@ function Payment(props) {
   const [banks, setBanks] = useState([])
   const [selectedBank, setSelectedBack] = useState({})
   const [bankingInfo, setBankingInfo] = useState(undefined)
+  const [waiting, setWaiting] = useState(false)
 
   const [{isSuccess, isError, message}, setAlertMessage] = useState({isSuccess: false, isError: false, message: ''})
 
@@ -34,26 +35,24 @@ function Payment(props) {
         }
       })
 
-    if (getTokenAccess() && getCartId() && !cartInfo) {
-      cartRefresh(getCartId(), 'ir', 'fa')
-    } else {
-      !getCartId() && router.push(Routes.cart)
-      !getTokenAccess() && router.push(Routes.signup)
+    if (!getTokenAccess() || !getCartId() || !cartInfo) {
+      router.push(Routes.cart)
     }
   }, [])
 
   const onPayment = () => {
+    setWaiting(true)
     Api.requestOrders('ir', selectedBank.bank_id, cartInfo.unique_id, 0, 'payment', 1)
       .then(res => {
         if (res && res.data) {
           setBankingInfo(res.data)
           refreshToken()
         }
-
+        setWaiting(false)
       })
       .catch(reason => {
-        console.log('error requestOrders', reason)
         setAlertMessage({isSuccess: false, isError: true, message: getErrorMessage(reason)})
+        setWaiting(false)
       })
   }
   return <>
@@ -76,7 +75,7 @@ function Payment(props) {
       </div>
       <div className={styles.cartPayment}>
         <h2>مبلغ قابل پرداخت : {cartInfo && cartInfo.total}</h2>
-        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length}
+        <button disabled={!cartInfo || !cartInfo.items || !cartInfo.items.length || waiting}
                 onClick={onPayment}>پرداخت
         </button>
 

@@ -4,16 +4,15 @@ import styles from "../../styles/Home.module.css";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectCartInfo} from "../../redux/cart/reducer";
-import {gustTokenState, isLoginSuccess} from "../../redux/auth/reducer";
-import {addToCart} from "../../redux/cart/actions";
-import {refreshToken} from "../../redux/auth/actions";
+import {gustTokenState, loginState,} from "../../redux/auth/reducer";
+import {addToCart, cartRefresh} from "../../redux/cart/actions";
 import withMainLayout from "../../components/mainLayout";
-import {getCartId, getUser} from "../../components/localStorage";
+import {getUser} from "../../components/localStorage";
 import {useRouter} from "next/router";
 import Routes from '../../components/routes'
 
 function Product(props) {
-  const {productRes, addToCart, isLogin, cartInfo, refreshToken, gustStatus} = props
+  const {productRes, addToCart, loginStatus, gustStatus} = props
   const router = useRouter()
   const [selectedVariation, setVariation] = useState(undefined)
   const [quantity, setQuantity] = useState(0)
@@ -26,22 +25,18 @@ function Product(props) {
   })
   // console.log('product', productRes)
 
-  // useEffect(() => {
-  //   setUserInfo(JSON.parse(getUser()))
-  // }, [])
+  useEffect(() => {
+    setUserInfo(JSON.parse(getUser()))
+  }, [])
 
   useEffect(() => {
     console.log('setUserInfo', getUser())
     setUserInfo(JSON.parse(getUser()))
-  }, [isLogin, gustStatus])
+  }, [loginStatus, gustStatus])
 
   useEffect(() => {
     initProductInfo()
   }, [productRes])
-
-  useEffect(() => {
-    !getCartId() && refreshToken()
-  }, [cartInfo])
 
   const initProductInfo = () => {
     let photo = '', name = '', description = '', variations = []
@@ -66,9 +61,10 @@ function Product(props) {
   }
 
   const onClickBuy = () => {
-    if (!userInfo) {
+    /*if (!userInfo) {
       router.push(Routes.signup)
-    } else if (selectedVariation && quantity)
+    } else */
+    if (selectedVariation && quantity)
       addToCart(selectedVariation.unique_id, quantity)
   }
 
@@ -122,10 +118,14 @@ function Product(props) {
           <button onClick={() => onChangeValues('Quality', quantity - 1)}>-</button>
         </div>
         <div className={styles.catalog}>
-          <button disabled={!selectedVariation || !quantity || !selectedVariation.stock || !userInfo}
+          <button disabled={!selectedVariation || !quantity || !selectedVariation.stock
+          // || !userInfo
+          }
                   onClick={onClickBuy}>{selectedVariation && selectedVariation.stock ? 'خرید کنید' : 'ناموجود'}
           </button>
-          {!userInfo && <button onClick={() => router.push(Routes.signup)}>ورود</button>}
+          {/*<button*/}
+          {/*  // hidden={userInfo}*/}
+          {/*  onClick={() => router.push(Routes.signup)}>ورود</button>*/}
         </div>
       </div>
 
@@ -146,12 +146,12 @@ export async function getServerSideProps(context) {
 
 const mapStateToProps = state => ({
   cartInfo: selectCartInfo(state),
-  isLogin: isLoginSuccess(state),
+  loginStatus: loginState(state),
   gustStatus: gustTokenState(state)
 });
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  addToCart, refreshToken
+  addToCart, cartRefresh
 }, dispatch);
 export default connect(mapStateToProps, mapDispatchToProps)(withMainLayout(Product, 'مشخصات محصول'));
