@@ -66,7 +66,6 @@ function Header(props) {
   }, [cartInfo])
 
   const onLogout = () => {
-    // setCartInfo(undefined)
     setUserInfo(undefined)
     clearCustomerInfo()
     cleanLoginState()
