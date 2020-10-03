@@ -1,2 +1,2 @@
-# pelasio-app
+# pelazio-app
 test app
