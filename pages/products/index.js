@@ -8,23 +8,19 @@ import ProductFilters from "../../components/productFilters";
 import {getCategoryList, setCategoryList} from "../../components/localStorage";
 import Routes from '../../components/routes'
 import Pagination from '../../components/pagination';
+import {format} from "url";
 
 function Products(props) {
 
   const {productData} = props
-  console.log(productData)
   const {metadata, result} = productData || {}
   const [products, setProducts] = useState(result || [])
   const [pagination, setPagination] = useState(metadata && metadata.pagination ? metadata.pagination : [])
   const router = useRouter()
+  const {pathname, query} = router
   const [categories, setCategories] = useState([])
-  const [filters, setFilters] = useState({
-    /*    category: undefined,
-        discount: false,
-        'in-stock': false,
-        'fast-delivery': false,
-        original: false,*/
-    sort: 'price,asc',//price,desc  ,date,asc,date,desc
+  const [filters, setFilters] = useState(query || {
+    sort: 'price,asc',
 
   })
   useEffect(() => {
@@ -39,6 +35,12 @@ function Products(props) {
       })
   }, [])
 
+  useEffect(()=>{
+    const {metadata, result} = productData || {}
+    setProducts(result)
+    setPagination(metadata && metadata.pagination ? metadata.pagination : [])
+  },[productData])
+
   const addFilter = (filter) => {
     const newFilters = Object.assign(filters, filter);
     setFilters(newFilters)
@@ -50,15 +52,17 @@ function Products(props) {
     loadProducts(newFilters)
   }
 
-  const loadProducts = (filters) => {
-    Api.getProductSearch(filters)
-      .then(res => {
-        if (res && res.data) {
-          const data = res.data
-          setProducts(data.result || [])
-          data.metadata && setPagination(data.metadata.pagination || {})
-        }
-      })
+  const loadProducts = (query) => {
+    const url = format({pathname: pathname, query: query})
+    router.push(url)
+    // Api.getProductSearch(filters)
+    //   .then(res => {
+    //     if (res && res.data) {
+    //       const data = res.data
+    //       setProducts(data.result || [])
+    //       data.metadata && setPagination(data.metadata.pagination || {})
+    //     }
+    //   })
   }
 
   const onClickItem = id => {
@@ -90,6 +94,7 @@ function Products(props) {
       totalPage={pagination.total_pages}
       onChange={page => {
         filters.page = page
+        setFilters(filters)
         loadProducts(filters)
       }}/>
 
@@ -97,9 +102,9 @@ function Products(props) {
 
 }
 
-export async function getServerSideProps() {
-  const params = {sort: 'price,asc'}
-  let res = await Api.getProductSearch(params)
+export async function getServerSideProps({query}) {
+  let res = await Api.getProductSearch(query || {sort: 'price,asc'})
+  console.log(res)
   return {
     props: {
       productData: res && res.data ? res.data : {}

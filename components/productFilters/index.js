@@ -15,7 +15,8 @@ export default function ProductFilters({categories, filters, onChange}) {
              }}/>
     </div>
     <div className={styles.card}>
-      <select onChange={event => onChange({category: event.target.value})}>
+      <select onChange={event => onChange({category: event.target.value})}
+              value={filters.category}>
         <option key={'cat0'} value={0}>دسته بندی</option>
         {
           categories && categories.map(category =>
