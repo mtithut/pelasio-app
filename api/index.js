@@ -32,7 +32,8 @@ const post = function (url, body = '', headers = {}) {
   return axios.post(baseUrl + url, body, {headers: headers})
     .then((response) => response.data)
     .catch((error) => {
-      throw error && error.response && error.response.data;
+      if (error && error.response)
+        throw error && error.response && error.response.data;
     });
 };
 
@@ -41,14 +42,18 @@ const put = function (url, body = {}, headers = {}) {
   return axios.put(baseUrl + url, body, {headers: headers, /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
-      throw error && error.response && error.response.data;
+      if (error && error.response && error.response.data)
+        throw error.response.data;
+      else return;
     });
 };
 const patch = function (url, body = '', headers = {}) {
   return axios.patch(baseUrl + url, body, {headers: headers, /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
-      throw error && error.response && error.response.data;
+      if (error && error.response && error.response.data)
+        throw error.response.data;
+      else return;
     });
 };
 
@@ -57,7 +62,12 @@ const get = function (url, params = {}, headers = {}) {
   return axios.get(baseUrl + url, {params: params, headers: headers /*withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
-      throw error && error.response && error.response.data;
+      if (error && error.response && error.response.data) {
+        console.log('error.response.data',error.response.data)
+        throw error.response.data;
+      }
+      else return ;
+
     });
 };
 
@@ -65,7 +75,9 @@ const deleteCall = function (url, data = {}, headers = {}) {
   return axios.delete(baseUrl + url, {data: data, headers: headers,/* withCredentials: true*/})
     .then((response) => response.data)
     .catch((error) => {
-      throw error && error.response && error.response.data;
+      if (error && error.response && error.response.data)
+        throw error.response.data;
+      else return;
     });
 };
 

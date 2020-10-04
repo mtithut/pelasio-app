@@ -119,7 +119,7 @@ function Product(props) {
         </div>
         <div className={styles.catalog}>
           <button disabled={!selectedVariation || !quantity || !selectedVariation.stock
-          // || !userInfo
+            // || !userInfo
           }
                   onClick={onClickBuy}>{selectedVariation && selectedVariation.stock ? 'خرید کنید' : 'ناموجود'}
           </button>
@@ -139,7 +139,7 @@ export async function getServerSideProps(context) {
   let product = await Api.getCatalogs(id, 'ir', 'fa')
   return {
     props: {
-      productRes: product,
+      productRes: product || {},
     },
   }
 }
